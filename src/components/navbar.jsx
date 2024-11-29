@@ -20,10 +20,12 @@ const Navbar = () => {
         <li className="hover:text-[#018ABD] cursor-pointer">Pricing</li>
         <li className="hover:text-[#018ABD] cursor-pointer">About Us</li>
       </ul>
-      <div onClick={handleNav} className='block md:hidden'>
-          {!nav ? <AiOutlineClose size={20}/> : <AiOutlineMenu size={20} />}
+      <div onClick={handleNav} className='block md:hidden cursor-pointer z-50'>
+          {!nav ? <AiOutlineMenu size={20}/> : <AiOutlineClose size={20} />}
       </div>
-      <div className={!nav ? 'fixed left-0 top-0 w-[60%] h-full border-r border-r-blue-900 bg-[#DDE8F0]/50 backdrop-blur-lg ease-in-out duration-500' : 'fixed left-[-100%]'}>
+      <div className={`fixed left-0 top-0 w-[60%] h-full border-r border-blue-900 bg-[#DDE8F0]/50 backdrop-blur-lg ease-in-out duration-500 transform ${
+          nav ? 'left-0' : '-left-[100%]'
+        }`}>
       <h1 className="w-full text-3xl font-bold text-[#004581] m-4">MCQuiz</h1>
 
         <ul className=' font-semibold p-4'>
