@@ -1,18 +1,24 @@
 import React from 'react';
+import Hero from './components/Hero'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Form from './components/LoginPage/loginform';
-
 
 
 function App() {
   const location = useLocation(); 
 
   return (
+    
     <div>
       {/* Show Navbar only when NOT on the login page */}
-      {location.pathname !== '/login' && <Navbar />}
-
+      {location.pathname !== '/login' && (
+        <>
+          <Navbar />
+          <Hero />
+        </>
+      )}
+        
       <Routes>
         {/* Login Page */}
         <Route
