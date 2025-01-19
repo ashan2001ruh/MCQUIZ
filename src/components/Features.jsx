@@ -58,8 +58,8 @@ const Features = () => {
             ease: 'linear', // Smooth linear movement
           }}
         >
-          {/* Render cards twice for seamless looping */}
-          {[...features, ...features].map((feature, index) => (
+          
+          {[...features, ...features, ...features, ...features, ...features].map((feature, index) => (
             <motion.div
               key={index}
               className="flex flex-col justify-center items-center rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300 mx-4"

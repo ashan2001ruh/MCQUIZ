@@ -66,7 +66,7 @@ const Hero = () => {
 
         {/* Right Section: Image */}
         <motion.div
-          className="hidden md:block flex-1 flex justify-end"
+          className="hidden md:block flex-1 justify-end"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: 'easeInOut' }}

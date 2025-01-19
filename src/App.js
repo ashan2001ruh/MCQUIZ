@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar';
 import Form from './components/LoginPage/loginform';
 import Pricing from './components/Pricing';
+import Aboutus from './components/Aboutus';
 
 function App() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function App() {
           <Hero />
           <Features /> 
           <Pricing />
+          <Aboutus />
         </>
       )}
 
