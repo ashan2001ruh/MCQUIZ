@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 
-const Navbar = () => {
+const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
   const [nav, setNav] = useState(false);
   const navigate = useNavigate(); // Initialize the navigate function
 
@@ -14,6 +14,14 @@ const Navbar = () => {
   const handleLoginClick = () => {
     navigate('/login'); // Navigate to the /login page
   };
+
+  const scrollToSection = (ref) => {
+    if (ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth' });
+    }
+    setNav(false); // Close the mobile menu after clicking a link
+  };
+
 
   // Animation variants
   const navbarVariants = {
@@ -39,10 +47,10 @@ const Navbar = () => {
       <div className="flex items-center space-x-6 md:space-x-8">
         {/* Navigation Menu */}
         <ul className="hidden md:flex space-x-6 md:space-x-8 font-semibold text-lg md:text-base">
-          <li className="hover:text-[#018ABD] cursor-pointer">Home</li>
-          <li className="hover:text-[#018ABD] cursor-pointer">Features</li>
-          <li className="hover:text-[#018ABD] cursor-pointer">Pricing</li>
-          <li className="hover:text-[#018ABD] cursor-pointer">About Us</li>
+          <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(homeRef)}>Home</li>
+          <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(featuresRef)}>Features</li>
+          <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(pricingRef)}>Pricing</li>
+          <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(aboutUsRef)}>About Us</li>
         </ul>
 
         {/* Hamburger Menu */}
@@ -60,10 +68,10 @@ const Navbar = () => {
           animate={nav ? 'visible' : 'hidden'}
         >
           <h1 className="w-full text-3xl font-bold text-[#004581] m-4">MCQuiz</h1>
-          <li className="p-4 border-b border-blue-900">Home</li>
-          <li className="p-4 border-b border-blue-900">Features</li>
-          <li className="p-4 border-b border-blue-900">Pricing</li>
-          <li className="p-4">About Us</li>
+          <li className="p-4 border-b border-blue-900 hover:bg-[#018ABD] hover:text-white transition duration-300 cursor-pointer" onClick={() => scrollToSection(homeRef)}>Home</li>
+          <li className="p-4 border-b border-blue-900 hover:bg-[#018ABD] hover:text-white transition duration-300 cursor-pointer" onClick={() => scrollToSection(featuresRef)}>Features</li>
+          <li className="p-4 border-b border-blue-900 hover:bg-[#018ABD] hover:text-white transition duration-300 cursor-pointer" onClick={() => scrollToSection(pricingRef)}>Pricing</li>
+          <li className="p-4 hover:bg-[#018ABD] hover:text-white transition duration-300 cursor-pointer" onClick={() => scrollToSection(aboutUsRef)}>About Us</li>
         </motion.ul>
       </div>
 

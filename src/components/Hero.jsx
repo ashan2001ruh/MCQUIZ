@@ -2,8 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Typewriter } from 'react-simple-typewriter';
 import onlineTestImage from '../Assets/Online test-amico.png';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Hero = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  const handleRegisterClick = () => {
+    navigate('/signup'); // Navigate to the /signup route
+  };
+
   return (
     <div className="text-[#004581] py-16">
       <div className="max-w-[1240px] mx-auto flex flex-col md:flex-row items-center px-6 gap-8">
@@ -59,6 +66,7 @@ const Hero = () => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
+            onClick={handleRegisterClick} // Add onClick handler
           >
             REGISTER
           </motion.button>
@@ -66,7 +74,7 @@ const Hero = () => {
 
         {/* Right Section: Image */}
         <motion.div
-          className="hidden md:block flex-1 justify-end"
+          className="hidden md:block flex-1 flex justify-end"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: 'easeInOut' }}

@@ -3,7 +3,14 @@ import { motion } from 'framer-motion';
 import aboutUsImage from '../Assets/aboutus.png'; // Replace with your image path
 import { FaPhone, FaEnvelope, FaGlobe } from 'react-icons/fa'; // Import icons from react-icons
 
-const AboutUs = () => {
+const AboutUs = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
+  // Function to scroll to a section
+  const scrollToSection = (ref) => {
+    if (ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="bg-[#DDE8F0] py-16 overflow-hidden"> {/* Outer background color */}
       <div className="max-w-[1240px] mx-auto px-6">
@@ -76,10 +83,10 @@ const AboutUs = () => {
             <div>
               <h3 className="text-xl font-bold text-[#004581] mb-4">Quick Links</h3>
               <ul className="text-lg text-[#004581]">
-                <li className="mb-2"><a href="/">Home</a></li>
-                <li className="mb-2"><a href="/features">Features</a></li>
-                <li className="mb-2"><a href="/pricing">Pricing</a></li>
-                <li className="mb-2"><a href="/about">About us</a></li>
+                <li className="mb-2"><button onClick={() => scrollToSection(homeRef)} className="hover:text-[#018ABD]">Home</button></li>
+                <li className="mb-2"><button onClick={() => scrollToSection(featuresRef)} className="hover:text-[#018ABD]">Features</button></li>
+                <li className="mb-2"><button onClick={() => scrollToSection(pricingRef)} className="hover:text-[#018ABD]">Pricing</button></li>
+                <li className="mb-2"><button onClick={() => scrollToSection(aboutUsRef)} className="hover:text-[#018ABD]">About us</button></li>
                 <li className="mb-2"><a href="/faq">FAQ</a></li>
                 <li className="mb-2"><a href="/privacy-policy">Privacy Policy</a></li>
                 <li className="mb-2"><a href="/terms-of-use">Terms of Use</a></li>
