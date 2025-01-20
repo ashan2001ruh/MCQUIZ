@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Hero from './components/Hero';
 import Features from './components/Features'; 
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
@@ -8,7 +8,6 @@ import Pricing from './components/Pricing';
 import Aboutus from './components/Aboutus';
 import Signup from './components/SignupPage/signupform';
 import imageA from './Assets/ImageA.png';
-//import image1 from './Assets/Online test-amico.png';
 import imageD from './Assets/ImageD.png';
 import imageC from './Assets/ImageC.png';
 
@@ -17,16 +16,42 @@ import imageC from './Assets/ImageC.png';
 function App() {
   const location = useLocation();
 
+  // Create refs for each section
+  const homeRef = useRef(null);
+  const featuresRef = useRef(null);
+  const pricingRef = useRef(null);
+  const aboutUsRef = useRef(null);
+
   return (
     <div>
-      {/* Show Navbar, Hero, and Features only when NOT on the login page */}
+      {/* Show Navbar, Hero, and Features only when NOT on the login or signup page */}
       {location.pathname !== '/login' && location.pathname !== '/signup' && (
         <>
-          <Navbar />
-          <Hero />
-          <Features /> 
-          <Pricing />
-          <Aboutus />
+          {/* Pass refs to Navbar */}
+          <Navbar
+            homeRef={homeRef}
+            featuresRef={featuresRef}
+            pricingRef={pricingRef}
+            aboutUsRef={aboutUsRef}
+          />
+          {/* Add ref to each section */}
+          <div ref={homeRef}>
+            <Hero />
+          </div>
+          <div ref={featuresRef}>
+            <Features />
+          </div>
+          <div ref={pricingRef}>
+            <Pricing />
+          </div>
+          <div ref={aboutUsRef}>
+            <Aboutus
+              homeRef={homeRef}
+              featuresRef={featuresRef}
+              pricingRef={pricingRef}
+              aboutUsRef={aboutUsRef}
+            />
+          </div>
         </>
       )}
 
