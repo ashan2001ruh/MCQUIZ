@@ -6,6 +6,13 @@ import Navbar from './components/Navbar';
 import Form from './components/LoginPage/loginform';
 import Pricing from './components/Pricing';
 import Aboutus from './components/Aboutus';
+import Signup from './components/SignupPage/signupform';
+import imageA from './Assets/ImageA.png';
+//import image1 from './Assets/Online test-amico.png';
+import imageD from './Assets/ImageD.png';
+import imageC from './Assets/ImageC.png';
+
+
 
 function App() {
   const location = useLocation();
@@ -13,7 +20,7 @@ function App() {
   return (
     <div>
       {/* Show Navbar, Hero, and Features only when NOT on the login page */}
-      {location.pathname !== '/login' && (
+      {location.pathname !== '/login' && location.pathname !== '/signup' && (
         <>
           <Navbar />
           <Hero />
@@ -47,6 +54,47 @@ function App() {
             </div>
           }
         />
+        {/* Signup Page */}
+        <Route
+          path="/signup"
+          element={
+            <div className="flex w-full h-screen">
+              {/* Left side: Slideshow */}
+              <div className="hidden lg:flex w-1/2 items-center justify-center">
+                <div className="relative w-full h-full">
+                  <div className="absolute inset-0">
+                    <div className="h-full w-full overflow-hidden">
+                      <div className="w-full h-full animate-slider">
+                        <img
+                          src={imageC}
+                          alt="Slideshow 1"
+                          className="w-full h-full object-cover flex-shrink-0"
+                        />
+                        <img
+                          src={imageD}
+                          alt="Slideshow 2"
+                          className="w-full h-full object-cover flex-shrink-0"
+                        />
+                        <img
+                          src={imageA}
+                          alt="Slideshow 3"
+                          className="w-full h-full object-cover flex-shrink-0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side: Signup Form */}
+              <div className="w-full lg:w-1/2 flex items-stretch">
+                <div className="w-full max-w-none">
+                  <Signup />
+                </div>
+              </div>
+            </div>
+          }
+          />
       </Routes>
     </div>
   );
