@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 
 export default function Form() {
   return (
@@ -56,7 +57,13 @@ export default function Form() {
             </div>
             <div className='mt-8 flex justify-center items-baseline'>
                 <p className='font-medium text-base'>Don't have an account?</p>
-                <button className='text-base font-medium ml-2 text-[#018ABD]'>Sign Up</button>
+                <Link
+                    to="/signup"
+                    className="text-base font-medium ml-2 text-[#018ABD] hover:underline"
+                >
+                     Sign Up
+                </Link>
+
             </div>
         </div>
     
