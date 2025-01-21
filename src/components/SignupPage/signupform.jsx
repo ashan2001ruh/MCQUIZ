@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import  Axios from  "axios" ;
+import Axios from 'axios';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -15,43 +15,73 @@ export default function Signup() {
 
   const [message, setMessage] = useState('');
 
+  // Regex for password validation
+  const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
+
   // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Validate form inputs
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      setMessage('First Name is required.');
+      return false;
+    }
+    if (!formData.lastName.trim()) {
+      setMessage('Last Name is required.');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      setMessage('Email is required.');
+      return false;
+    }
+    if (!passwordRegex.test(formData.password)) {
+      setMessage('Password must be at least 8 characters long, with at least one number and one symbol.');
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setMessage('Passwords do not match!');
+      return false;
+    }
+    return true;
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
-    // Validate password and confirm password
-    if (formData.password !== formData.confirmPassword) {
-        setMessage('Passwords do not match!');
-        return;
-    }
+    // Validate the form
+    if (!validateForm()) return;
 
     try {
-        // Use Axios.post instead of Axios.get
-        const response = await Axios.post('http://localhost:3001/api/register', {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            password: formData.password,
+      const response = await Axios.post('http://localhost:3001/api/register', {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.status === 201) {
+        setMessage('Account created successfully!');
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
         });
-
-        if (response.status === 201) {
-            setMessage('Account created successfully!');
-        }
+      }
     } catch (error) {
-        if (error.response) {
-            setMessage(error.response.data.message || 'Signup failed!');
-        } else {
-            setMessage('Network error. Please try again.');
-        }
+      if (error.response) {
+        setMessage(error.response.data.message || 'Signup failed!');
+      } else {
+        setMessage('Network error. Please try again.');
+      }
     }
-};
-
+  };
 
   return (
     <div className="bg-white px-6 py-10 border-2 border-gray-200 w-full">
@@ -144,3 +174,4 @@ export default function Signup() {
     </div>
   );
 }
+
