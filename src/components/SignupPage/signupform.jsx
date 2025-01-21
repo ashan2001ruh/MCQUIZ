@@ -3,6 +3,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+
 export default function Signup() {
   return (
     <div className="bg-white px-6 py-10 border-2 border-gray-200 w-full">
