@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
@@ -35,6 +34,11 @@ export default function Form() {
         setMessage('Network error. Please try again.');
       }
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    // Redirect the user to the backend Google OAuth endpoint
+    window.location.href = 'http://localhost:3001/auth/google';
   };
 
   return (
@@ -89,7 +93,11 @@ export default function Form() {
               Sign in
             </button>
 
-            <button className="flex rounded-xl py-3 border-2 border-gray-100 items-center justify-center gap-2 active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out transition-all">
+            <button
+              type="button"
+              className="flex rounded-xl py-3 border-2 border-gray-100 items-center justify-center gap-2 active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out transition-all"
+              onClick={handleGoogleSignIn}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 533.5 544.3" width="24" height="24">
                 <path
                   fill="#4285F4"
@@ -123,4 +131,3 @@ export default function Form() {
     </div>
   );
 }
-
