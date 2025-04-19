@@ -1,33 +1,49 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 
 export default function Form() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
+    e.preventDefault();
     try {
-      // Send a POST request to the backend with email and password
-      const response = await Axios.post('http://localhost:3001/api/login', {
+      // Try logging in as admin first
+      try {
+        const adminResponse = await Axios.post('http://localhost:3001/api/login', {
+          email,
+          password,
+        });
+
+        if (adminResponse.status === 200) {
+          const { token, admin } = adminResponse.data;
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('user', JSON.stringify({ ...admin, role: 'admin' }));
+          setMessage('Admin login successful!');
+          navigate('/dashboard');
+          return;
+        }
+      } catch (adminError) {
+        console.log("Not an admin, trying user login");
+      }
+
+      // Try normal user login
+      const userResponse = await Axios.post('http://localhost:3001/api/login', {
         email,
         password,
       });
 
-      if (response.status === 200) {
-        // Handle success (e.g., save token, redirect, etc.)
-        const { token, user } = response.data;
-        localStorage.setItem('authToken', token); // Save token in localStorage
+      if (userResponse.status === 200) {
+        const { token, user } = userResponse.data;
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('user', JSON.stringify(user));
         setMessage('Login successful!');
-        
-        // Redirect or perform actions after successful login
-        console.log('User info:', user);
+        navigate('/');
       }
     } catch (error) {
-      // Handle errors (e.g., invalid credentials, server error)
       if (error.response) {
         setMessage(error.response.data.message || 'Login failed!');
       } else {
@@ -37,7 +53,6 @@ export default function Form() {
   };
 
   const handleGoogleSignIn = () => {
-    // Redirect the user to the backend Google OAuth endpoint
     window.location.href = 'http://localhost:3001/auth/google';
   };
 
@@ -60,7 +75,7 @@ export default function Form() {
               required
             />
           </div>
-          <div>
+          <div className="mt-4">
             <label className="text-lg font-sans font-medium text-[#004581]">Password</label>
             <input
               type="password"
@@ -71,17 +86,17 @@ export default function Form() {
               required
             />
           </div>
-
-          <div className="mt-8 flex justify-between items-center">
+          <div className="mt-4 flex justify-between items-center">
             <div>
               <input type="checkbox" id="remember" />
               <label className="ml-2 font-medium text-base" htmlFor="remember">
                 Remember me
               </label>
             </div>
-            <button className="font-medium text-base text-[#018ABD]">Forgot Password</button>
+            <button className="font-medium text-base text-[#018ABD]" type="button">
+              Forgot Password
+            </button>
           </div>
-
           <div className="mt-8 flex flex-col gap-y-4">
             <button
               type="submit"
@@ -92,7 +107,6 @@ export default function Form() {
             >
               Sign in
             </button>
-
             <button
               type="button"
               className="flex rounded-xl py-3 border-2 border-gray-100 items-center justify-center gap-2 active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out transition-all"

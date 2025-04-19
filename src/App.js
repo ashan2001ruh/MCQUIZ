@@ -9,7 +9,7 @@ import Aboutus from './components/Aboutus';
 import Signup from './components/SignupPage/signupform';
 import imageA from './Assets/ImageA.png';
 import imageD from './Assets/ImageD.png';
-import imageC from './Assets/ImageC.png';
+import imageC from './Assets/image1.png';
 
 
 
