@@ -1,11 +1,21 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 
+
 const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
+  const [user, setUser] = useState(null);
   const [nav, setNav] = useState(false);
+ 
   const navigate = useNavigate(); // Initialize the navigate function
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleNav = () => {
     setNav(!nav);
@@ -76,6 +86,13 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
       </div>
 
       {/* Login Button */}
+
+      {user ? (
+        <div className="hidden md:flex items-center space-x-2 font-semibold text-[#004581]">
+          <span className="text-sm">Hi, {user.fullName}</span>
+          </div>
+          ) : (
+
       <motion.button
         onClick={handleLoginClick}
         className="hidden md:block bg-[#018ABD] text-white font-semibold px-6 py-2 rounded-2xl text-sm hover:bg-[#005fa3] transition duration-200"
@@ -85,6 +102,7 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
       >
         LOG IN
       </motion.button>
+      )}
     </motion.div>
   );
 };
