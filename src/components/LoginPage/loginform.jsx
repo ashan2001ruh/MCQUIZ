@@ -13,7 +13,7 @@ export default function Form() {
     try {
       // Try logging in as admin first
       try {
-        const adminResponse = await Axios.post('http://localhost:3001/api/login', {
+        const adminResponse = await Axios.post('http://localhost:3001/api/admin/login', {
           email,
           password,
         });
