@@ -99,7 +99,7 @@ export default function AddSubjectModal({ isOpen, onClose, onSubmit }) {
               >
                 <option value="School Pro">School Pro</option>
                 <option value="O/L Pro">O/L Pro</option>
-                <option value="A/L">A/L</option>
+                
               </select>
             </div>
             
