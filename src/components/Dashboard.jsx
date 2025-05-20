@@ -439,7 +439,7 @@ export default function Dashboard() {
         <h2 className="text-xl sm:text-2xl font-semibold text-[#014482] font-inter">Subject Management</h2>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-3 py-1 sm:px-4 sm:py-2 bg-[#0389BC] text-white rounded hover:bg-[#2580a4] text-xs sm:text-sm"
+          className="bg-[#018ABD] text-white font-medium px-3 py-1 sm:px-4 sm:py-2 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
         >
           Create New Subject
         </button>
@@ -600,7 +600,7 @@ export default function Dashboard() {
         <h2 className="text-xl sm:text-2xl font-semibold text-[#014482] font-inter">Quiz Management</h2>
         <button
           onClick={() => setIsAddQuizOpen(true)}
-          className="px-3 py-1 sm:px-4 sm:py-2 bg-[#0389BC] text-white rounded hover:bg-[#2580a4] text-xs sm:text-sm"
+          className="bg-[#018ABD] text-white font-medium px-3 py-1 sm:px-4 sm:py-2 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
         >
           Create New Quiz
         </button>
