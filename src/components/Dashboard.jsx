@@ -784,8 +784,41 @@ export default function Dashboard() {
         )}
       </div>
       
-
-      
+      {pagination.total > 0 && (
+        <div className="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center mt-2 sm:mt-4 text-xs sm:text-sm">
+          <div className="text-gray-700 mb-2 sm:mb-0">
+            Showing <span className="font-medium">{((pagination.page - 1) * pagination.limit) + 1}</span> to{' '}
+            <span className="font-medium">
+              {Math.min(pagination.page * pagination.limit, pagination.total)}
+            </span> of{' '}
+            <span className="font-medium">{pagination.total}</span> results
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page === 1}
+              className={`px-2 sm:px-3 py-1 rounded border ${
+                pagination.page === 1 
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-blue-500 hover:bg-blue-50'
+              }`}
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page === pagination.pages}
+              className={`px-2 sm:px-3 py-1 rounded border ${
+                pagination.page === pagination.pages 
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-blue-500 hover:bg-blue-50'
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   </div>
   
