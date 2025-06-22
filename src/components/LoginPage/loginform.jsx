@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +8,10 @@ export default function Form() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the redirect path from location state, or default to home
+  const from = location.state?.from || '/';
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -40,7 +44,8 @@ export default function Form() {
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(user));
         setMessage('Login successful!');
-        navigate('/');
+        // Navigate to the page they were trying to access, or home
+        navigate(from);
       }
     } catch (error) {
       if (error.response) {

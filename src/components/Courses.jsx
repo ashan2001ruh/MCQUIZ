@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Courses = () => {
   const [subjects, setSubjects] = useState([]);
@@ -9,9 +9,10 @@ const Courses = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [subjectQuizzes, setSubjectQuizzes] = useState({});
+  const navigate = useNavigate();
   
   const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
   
@@ -19,7 +20,6 @@ const Courses = () => {
     const fetchSubjects = async () => {
       try {
         setLoading(true);
-        
         let url;
         if (selectedLevel) {
           const encodedLevel = encodeURIComponent(selectedLevel);
@@ -27,26 +27,23 @@ const Courses = () => {
         } else {
           url = `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/subjects`;
         }
-        
         const response = await axios.get(url, {
           headers: getAuthHeader()
         });
-        
+        let subjectsData;
         if (selectedLevel) {
-          setSubjects(response.data.subjects || []);
-        } else {
-          const subjectsData = response.data.subjects || [];
+          subjectsData = response.data.subjects || [];
           setSubjects(subjectsData);
-          
+        } else {
+          subjectsData = response.data.subjects || [];
+          setSubjects(subjectsData);
           if (Array.isArray(subjectsData)) {
             const uniqueLevels = [...new Set(subjectsData.map(subject => subject.level).filter(Boolean))];
             setLevels(uniqueLevels);
           }
         }
-        
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching subjects:', err);
         setError('Failed to load subjects. Please try again later.');
         setLoading(false);
       }
@@ -57,29 +54,23 @@ const Courses = () => {
   useEffect(() => {
     const fetchQuizzes = async () => {
       if (!subjects.length) return;
-      
       const quizzesBySubject = {};
-      
       for (const subject of subjects) {
         if (!subject || !subject._id) continue;
-        
         try {
-          const url = `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/quizzes/subject/${subject._id}`;
+          const url = `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/user-quizzes/subject/${subject._id}`;
           const response = await axios.get(url, {
             headers: getAuthHeader()
           });
-          
           if (response.data && response.data.quizzes) {
             quizzesBySubject[subject._id] = response.data.quizzes;
           }
         } catch (err) {
-          console.error(`Error fetching quizzes for subject ${subject._id}:`, err);
+          // Ignore errors for individual subjects
         }
       }
-      
       setSubjectQuizzes(quizzesBySubject);
     };
-    
     fetchQuizzes();
   }, [subjects]);
 
@@ -94,7 +85,6 @@ const Courses = () => {
   const subjectsByLevel = Array.isArray(subjects) 
     ? subjects.reduce((acc, subject) => {
         if (!subject || !subject.isActive) return acc;
-        
         if (!acc[subject.level]) {
           acc[subject.level] = [];
         }
@@ -103,13 +93,49 @@ const Courses = () => {
       }, {})
     : {};
 
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp > Date.now() / 1000;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Check if subject requires subscription (Pro/OL/AL)
+  const requiresSubscription = (level) => {
+    return ['Pro', 'OL', 'AL'].includes(level);
+  };
+
+  // Handle quiz attempt with authentication and subscription checks
+  const handleQuizAttempt = (quiz, subject) => {
+    if (!isAuthenticated()) {
+      alert('Please login to take this quiz');
+      navigate('/login', { state: { from: `/quizzes/${quiz._id}/attempt` } });
+      return;
+    }
+    if (requiresSubscription(subject.level)) {
+      // Check if user has active subscription
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!user.subscription || user.subscription.status !== 'active') {
+        alert('This quiz requires a subscription. Please upgrade to access Pro/OL/AL content.');
+        navigate('/pricing');
+        return;
+      }
+    }
+    // If all checks pass, navigate to quiz
+    navigate(`/quizzes/${quiz._id}/attempt`);
+  };
+
   return (
-<div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">
         <span className="text-[#014482]">All </span>
         <span className="text-[#018ABE]">Courses</span>
       </h1>
-      
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Filter by Level:</h2>
         <div className="flex flex-wrap gap-3 justify-center">
@@ -140,7 +166,6 @@ const Courses = () => {
           ))}
         </div>
       </div>
-      
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -160,7 +185,8 @@ const Courses = () => {
               <SubjectCard 
                 key={subject._id} 
                 subject={subject} 
-                quizzes={subjectQuizzes[subject._id] || []} 
+                quizzes={subjectQuizzes[subject._id] || []}
+                onQuizAttempt={handleQuizAttempt}
               />
             )
           ))}
@@ -177,6 +203,7 @@ const Courses = () => {
                   key={subject._id} 
                   subject={subject}
                   quizzes={subjectQuizzes[subject._id] || []}
+                  onQuizAttempt={handleQuizAttempt}
                 />
               ))}
             </div>
@@ -187,13 +214,11 @@ const Courses = () => {
   );
 };
 
-const SubjectCard = ({ subject, quizzes }) => {
+const SubjectCard = ({ subject, quizzes, onQuizAttempt }) => {
   const [expanded, setExpanded] = useState(false);
-  
   const toggleExpanded = () => {
     setExpanded(!expanded);
   };
-
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[#0688BB]">
       <img 
@@ -204,11 +229,9 @@ const SubjectCard = ({ subject, quizzes }) => {
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2 text-[#0688BB] text-left">{subject.name}</h3>
         <p className="text-sm text-[#585858] mb-4">{subject.level}</p>
-        
         {subject.description && (
           <p className="text-[#585858] mb-4 line-clamp-3">{subject.description}</p>
         )}
-        
         <div className="flex justify-between items-center mb-4">
           <span className="text-sm font-medium text-[#0688BB]">
             {quizzes.length || 0} {(quizzes.length === 1) ? 'Quiz' : 'Quizzes'}
@@ -220,7 +243,6 @@ const SubjectCard = ({ subject, quizzes }) => {
             {expanded ? 'Hide Quizzes' : 'Show Quizzes'}
           </button>
         </div>
-        
         {expanded && quizzes.length > 0 && (
           <div className="mt-4 border-t pt-4">
             <h4 className="font-medium mb-3">Available Quizzes:</h4>
@@ -234,25 +256,23 @@ const SubjectCard = ({ subject, quizzes }) => {
                           (Q.{quiz.questionsCount || '?'})
                         </span>
                       </span>
-                      <Link
-                        to=""
+                      <button
+                        onClick={() => onQuizAttempt(quiz, subject)}
                         className="px-3 py-1 text-sm bg-[#008ABD] text-white rounded hover:bg-blue-700 transition-colors"
                       >
                         Try Now
-                      </Link>
+                      </button>
                     </div>
                   </li>
                 ))}
             </ul>
           </div>
         )}
-        
         {expanded && quizzes.length === 0 && (
           <div className="mt-4 border-t pt-4 text-center text-gray-500">
             No quizzes available for this subject yet.
           </div>
         )}
-        
       </div>
     </div>
   );

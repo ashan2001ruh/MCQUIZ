@@ -6,9 +6,12 @@ import Features from './components/Features';
 import Pricing from './components/Pricing';
 import Aboutus from './components/Aboutus';
 import Dashboard from './components/Dashboard';
+import Courses from './components/Courses';
+import SubjectQuizzes from './components/SubjectQuizzes';
+import QuizAttempts from './components/QuizAttempts';
+
 import Form from './components/LoginPage/loginform';
 import Signup from './components/SignupPage/signupform';
-import Courses from './components/Courses'; 
 import imageA from './Assets/ImageA.png';
 import imageD from './Assets/ImageD.png';
 import imageC from './Assets/ImageC.png';
@@ -23,6 +26,7 @@ function App() {
   return (
     <div>
       <Routes>
+        {/* Home Page Route */}
         <Route
           path="/"
           element={
@@ -53,9 +57,20 @@ function App() {
             </>
           }
         />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/courses" element={<Courses />} />
         
+        {/* Dashboard Route */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Courses Route */}
+        <Route path="/courses" element={<Courses />} />
+
+        <Route path="/subject/:subjectId/quizzes" element={<SubjectQuizzes />} />
+
+        <Route path="/quizzes/:quizId/attempt" element={<QuizAttempts />} />
+
+        
+        
+        {/* Login Route */}
         <Route
           path="/login"
           element={
@@ -75,6 +90,8 @@ function App() {
             </div>
           }
         />
+        
+        {/* Signup Route */}
         <Route
           path="/signup"
           element={

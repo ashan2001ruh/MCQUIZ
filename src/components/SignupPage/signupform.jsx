@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
 
-
 export default function Signup() {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -85,7 +84,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="bg-white px-6 py-10 border-2 border-gray-200 w-full h-full flex flex-col justify center">
+    <div className="bg-white px-6 py-10 border-2 border-gray-200 w-full">
       <h1 className="text-4xl font-sans font-bold text-[#004581]">Create Account</h1>
       <p className="font-sans font-medium text-medium text-gray-500 mt-1">
         Already have an account?{' '}
