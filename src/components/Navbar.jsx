@@ -45,7 +45,7 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
 
   return (
     <motion.div
-      className="flex justify-between items-center h-20 max-w-[1240px] mx-auto px-8 bg-transparent text-[#004581]"
+      className="flex items-center h-20 max-w-[1240px] mx-auto px-8 bg-transparent text-[#004581]"
       variants={navbarVariants}
       initial="hidden"
       animate="visible"
@@ -53,9 +53,9 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
       {/* Logo */}
       <h1 className="text-2xl md:text-3xl font-sans font-bold text-[#004581]">MCQuiz</h1>
 
-      <div className="flex items-center space-x-6 md:space-x-8">
+      <div className="flex-1 flex justify-center">
         {/* Navigation Menu */}
-        <ul className="hidden md:flex space-x-6 md:space-x-8 font-semibold text-lg md:text-base">
+        <ul className="hidden md:flex space-x-6 md:space-x-8 font-semibold text-lg md:text-base items-center">
           <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(homeRef)}>Home</li>
           <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(featuresRef)}>Features</li>
           <li className="hover:text-[#018ABD] cursor-pointer" onClick={() => scrollToSection(pricingRef)}>Pricing</li>
@@ -84,26 +84,14 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
         </motion.ul>
       </div>
 
-      {/* Login Button */}
-      
-      {user ? (
-        <div className="hidden md:flex items-center space-x-2 font-semibold text-[#004581]">
-          <span className="text-sm">Hi, {user.fullName}</span>
-          </div>
-          ) : (
-          
-          <motion.button
-          onClick={handleLoginClick}
-          className="hidden md:block bg-[#018ABD] text-white font-semibold px-6 py-2 rounded-2xl text-sm hover:bg-[#005fa3] transition duration-200"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            LOG IN
-            </motion.button>
-          )}
-          </motion.div>
-          );
-        };
-        
+      {/* Hi FirstName on the right */}
+      {user && user.firstName && (
+        <div className="hidden md:flex items-center font-semibold text-[#004581] text-base ml-4">
+          Hi {user.firstName}!
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
 export default Navbar;
