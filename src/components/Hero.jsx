@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Typewriter } from 'react-simple-typewriter';
 import onlineTestImage from '../Assets/Online test-amico.png';
@@ -6,9 +6,24 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Hero = () => {
   const navigate = useNavigate(); // Initialize the navigate function
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleRegisterClick = () => {
     navigate('/signup'); // Navigate to the /signup route
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/'); // Redirect to home page
   };
 
   return (
@@ -61,15 +76,27 @@ const Hero = () => {
           </motion.div>
 
           {/* Button */}
-          <motion.button
-            className="bg-[#018ABD] text-white font-semibold py-3 px-6 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            onClick={handleRegisterClick} // Add onClick handler
-          >
-            REGISTER
-          </motion.button>
+          {!user ? (
+            <motion.button
+              className="bg-[#018ABD] text-white font-semibold py-3 px-6 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              onClick={handleRegisterClick}
+            >
+              REGISTER
+            </motion.button>
+          ) : (
+            <motion.button
+              className="bg-[#018ABD] text-white font-semibold py-3 px-6 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              onClick={handleLogout}
+            >
+              LOGOUT
+            </motion.button>
+          )}
         </motion.div>
 
         {/* Right Section: Image */}
