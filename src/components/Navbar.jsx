@@ -84,12 +84,23 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
         </motion.ul>
       </div>
 
-      {/* Hi FirstName on the right */}
-      {user && user.firstName && (
-        <div className="hidden md:flex items-center font-semibold text-[#004581] text-base ml-4">
-          Hi {user.firstName}!
-        </div>
-      )}
+<div className="hidden md:flex items-center justify-end flex-1 ml-4">
+  {user && user.firstName ? (
+    <div className="font-semibold text-[#004581] text-base">
+      Hi {user.firstName}!
+    </div>
+  ) : (
+    <motion.button
+      onClick={handleLoginClick}
+      className="bg-[#018ABD] text-white font-semibold px-6 py-2 rounded-2xl text-sm hover:bg-[#005fa3] transition duration-200"
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.8, delay: 0.5 }}
+    >
+      LOG IN
+    </motion.button>
+  )}
+</div>
     </motion.div>
   );
 };
