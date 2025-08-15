@@ -76,7 +76,7 @@ const Hero = () => {
           </motion.div>
 
           {/* Button */}
-          {!user ? (
+          {!user && (
             <motion.button
               className="bg-[#018ABD] text-white font-semibold py-3 px-6 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
               initial={{ scale: 0.9, opacity: 0 }}
@@ -85,16 +85,6 @@ const Hero = () => {
               onClick={handleRegisterClick}
             >
               REGISTER
-            </motion.button>
-          ) : (
-            <motion.button
-              className="bg-[#018ABD] text-white font-semibold py-3 px-6 mt-6 rounded-full hover:bg-[#004581] transition duration-300"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              onClick={handleLogout}
-            >
-              LOGOUT
             </motion.button>
           )}
         </motion.div>
