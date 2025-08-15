@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -9,6 +9,8 @@ import Dashboard from './components/Dashboard';
 import Courses from './components/Courses';
 import SubjectQuizzes from './components/SubjectQuizzes';
 import QuizAttempts from './components/QuizAttempts';
+import UserDashboard from './components/UserDashboard'
+import QuizHistory from './components/QuizHistory'
 
 import Form from './components/LoginPage/loginform';
 import Signup from './components/SignupPage/signupform';
@@ -17,7 +19,6 @@ import imageD from './Assets/ImageD.png';
 import imageC from './Assets/ImageC.png';
 
 function App() {
-  const location = useLocation();
   const homeRef = useRef(null);
   const featuresRef = useRef(null);
   const pricingRef = useRef(null);
@@ -57,9 +58,15 @@ function App() {
             </>
           }
         />
-        
-        {/* Dashboard Route */}
+        {/* Admin Dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* User Dashboard */}
+        <Route path="/user-dashboard" element={<UserDashboard />} />
+        
+        {/* Quiz History */}
+        <Route path="/quiz-history" element={<QuizHistory />} />
+        
         
         {/* Courses Route */}
         <Route path="/courses" element={<Courses />} />
