@@ -15,6 +15,7 @@ export default function EditQuiz({ isOpen, onClose, onQuizUpdated, quiz }) {
     timeLimit: 0,
     difficulty: 'Medium',
     passingScore: 60,
+    subscriptionLevel: 'Basic',
     isActive: true,
     questions: []
   });
@@ -31,6 +32,7 @@ export default function EditQuiz({ isOpen, onClose, onQuizUpdated, quiz }) {
           timeLimit: quiz.quiz.timeLimit || 0,
           difficulty: quiz.quiz.difficulty || 'Medium',
           passingScore: quiz.quiz.passingScore || 60,
+          subscriptionLevel: quiz.quiz.subscriptionLevel || 'Basic',
           isActive: quiz.quiz.isActive !== undefined ? quiz.quiz.isActive : true,
           questions: quiz.quiz.questions.map(q => ({
             question: q.question,
@@ -300,6 +302,24 @@ export default function EditQuiz({ isOpen, onClose, onQuizUpdated, quiz }) {
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
                     <option value="Hard">Hard</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-[#014482] font-medium mb-1">
+                    Subscription Level *
+                  </label>
+                  <select
+                    name="subscriptionLevel"
+                    value={formData.subscriptionLevel}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border bg-[#DEE8F1] border-[#014482] rounded focus:outline-none focus:ring-2 focus:ring-[#0389BC]"
+                  >
+                              <option value="Basic">Basic</option>
+          <option value="School Pro">School Pro</option>
+          <option value="O/L Pro">O/L Pro</option>
+          <option value="A/L Pro">A/L Pro</option>
                   </select>
                 </div>
                 

@@ -27,7 +27,8 @@ export default function Dashboard() {
     search: '',
     subject: '',
     difficulty: '',
-    active: ''
+    active: '',
+    subscriptionLevel: ''
   });
   
   const [isAddQuizOpen, setIsAddQuizOpen] = useState(false);
@@ -96,7 +97,7 @@ export default function Dashboard() {
   const fetchQuizzes = async (page = 1) => {
     try {
       const token = localStorage.getItem('authToken');
-      const { search, subject, difficulty, active } = filters;
+      const { search, subject, difficulty, active, subscriptionLevel } = filters;
       
       let url = `http://localhost:3001/api/admin/quizzes?page=${page}&limit=${pagination.limit}`;
       
@@ -104,6 +105,7 @@ export default function Dashboard() {
       if (subject) url += `&subject=${subject}`;
       if (difficulty) url += `&difficulty=${difficulty}`;
       if (active !== '') url += `&active=${active}`;
+      if (subscriptionLevel) url += `&subscriptionLevel=${subscriptionLevel}`;
       
       const response = await Axios.get(url, {
         headers: {
@@ -607,7 +609,7 @@ export default function Dashboard() {
       </div>
       
       <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-300">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           <div>
             <input
               type="text"
@@ -630,6 +632,21 @@ export default function Dashboard() {
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
               <option value="Hard">Hard</option>
+            </select>
+          </div>
+          
+          <div>
+            <select
+              name="subscriptionLevel"
+              value={filters.subscriptionLevel}
+              onChange={handleFilterChange}
+              className="w-full px-3 py-2 text-[#014482] border bg-[#DEE8F1] border-[#014482] rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm"
+            >
+              <option value="">All Subscription Levels</option>
+                             <option value="Basic">Basic</option>
+               <option value="School Pro">School Pro</option>
+               <option value="O/L Pro">O/L Pro</option>
+               <option value="A/L Pro">A/L Pro</option>
             </select>
           </div>
           
@@ -674,6 +691,9 @@ export default function Dashboard() {
                 Difficulty
               </th>
               <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Subscription
+              </th>
+              <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
               <th scope="col" className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -704,6 +724,15 @@ export default function Dashboard() {
                     </span>
                   </td>
                   <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
+                                         <span className={`px-2 inline-flex text-xs leading-5 rounded-full 
+                       ${quiz.subscriptionLevel === 'Basic' ? 'bg-blue-100 text-blue-800' : 
+                         quiz.subscriptionLevel === 'School Pro' ? 'bg-purple-100 text-purple-800' : 
+                         quiz.subscriptionLevel === 'O/L Pro' ? 'bg-orange-100 text-orange-800' : 
+                         'bg-red-100 text-red-800'}`}>
+                       {quiz.subscriptionLevel}
+                     </span>
+                  </td>
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 rounded-full 
                       ${quiz.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {quiz.isActive ? 'Active' : 'Inactive'}
@@ -727,7 +756,7 @@ export default function Dashboard() {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-3 sm:px-6 py-2 sm:py-4 text-center text-xs sm:text-sm text-gray-500">
+                <td colSpan="7" className="px-3 sm:px-6 py-2 sm:py-4 text-center text-xs sm:text-sm text-gray-500">
                   No quizzes found
                 </td>
               </tr>
@@ -754,12 +783,21 @@ export default function Dashboard() {
                 <div className="text-xs text-gray-500">
                   Questions: {quiz.questionsCount}
                 </div>
-                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold
-                  ${quiz.difficulty === 'Easy' ? 'bg-green-100 text-green-800' : 
-                    quiz.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                    'bg-red-100 text-red-800'}`}>
-                  {quiz.difficulty}
-                </span>
+                <div className="flex space-x-1">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold
+                    ${quiz.difficulty === 'Easy' ? 'bg-green-100 text-green-800' : 
+                      quiz.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
+                      'bg-red-100 text-red-800'}`}>
+                    {quiz.difficulty}
+                  </span>
+                                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold
+                     ${quiz.subscriptionLevel === 'Basic' ? 'bg-blue-100 text-blue-800' : 
+                       quiz.subscriptionLevel === 'School Pro' ? 'bg-purple-100 text-purple-800' : 
+                       quiz.subscriptionLevel === 'O/L Pro' ? 'bg-orange-100 text-orange-800' : 
+                       'bg-red-100 text-red-800'}`}>
+                     {quiz.subscriptionLevel}
+                   </span>
+                </div>
               </div>
               <div className="flex justify-end space-x-3 mt-2">
                 <button 
