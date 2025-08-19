@@ -16,12 +16,15 @@ const Pricing = () => {
   const isLoggedIn = () => {
     const token = localStorage.getItem('authToken');
     if (!token) return false;
-    
+    // Decode JWT payload using base64url; if parsing fails, assume logged in and let server validate
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+      const payload = JSON.parse(atob(padded));
       return payload.exp > Date.now() / 1000;
     } catch (error) {
-      return false;
+      return true;
     }
   };
 
@@ -44,7 +47,7 @@ const Pricing = () => {
 
     try {
       const planAmounts = {
-        'Schol Pro': 1500,
+        'School Pro': 1500,
         'O/L Pro': 2000,
         'A/L Pro': 2500
       };
@@ -70,6 +73,7 @@ const Pricing = () => {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'https://sandbox.payhere.lk/pay/checkout'; // Sandbox URL
+        form.target = '_self';
         
         // Add all payment data as hidden fields
         Object.keys(paymentData).forEach(key => {
@@ -83,11 +87,16 @@ const Pricing = () => {
         // Submit the form
         document.body.appendChild(form);
         form.submit();
-        document.body.removeChild(form);
+        // Do not remove form immediately to avoid interrupting navigation
       }
     } catch (err) {
       console.error('Payment initialization error:', err);
-      setError('Failed to initialize payment. Please try again.');
+      if (err?.response?.status === 401) {
+        alert('Please login to access this plan');
+        navigate('/login');
+      } else {
+        setError(err?.response?.data?.message || 'Failed to initialize payment. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -105,7 +114,7 @@ const Pricing = () => {
       buttonColor: 'bg-[#018ABD] text-white font-semibold px-6 py-2 rounded-2xl text-sm hover:bg-[#005fa3] transition duration-200',
     },
     {
-      title: 'Schol Pro',
+      title: 'School Pro',
       price: 'Rs. 1500',
       features: [
         'Tailored for students preparing for the Grade 5 Scholarship exam.',
