@@ -305,6 +305,27 @@ export default function EditQuiz({ isOpen, onClose, onQuizUpdated, quiz }) {
                 
                 <div>
                   <label className="block text-[#014482] font-medium mb-1">
+<<<<<<< Updated upstream
+=======
+                    Subscription Level *
+                  </label>
+                  <select
+                    name="subscriptionLevel"
+                    value={formData.subscriptionLevel}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border bg-[#DEE8F1] border-[#014482] rounded focus:outline-none focus:ring-2 focus:ring-[#0389BC]"
+                  >
+                              <option value="Basic">Basic</option>
+                                     <option value="School Pro">School Pro</option>
+                      <option value="O/L Pro">O/L Pro</option>
+            <option value="A/L Pro">A/L Pro</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-[#014482] font-medium mb-1">
+>>>>>>> Stashed changes
                     Passing Score (%)
                   </label>
                   <input

@@ -14,7 +14,7 @@ export default function EditSubjectModal({ isOpen, onClose, onSubmit, subject })
     if (subject) {
       setFormData({
         name: subject.name || '',
-        level: subject.level || 'School Pro',
+        level: subject.level || 'School',
         description: subject.description || '',
         isActive: subject.isActive !== false
       });
@@ -103,8 +103,8 @@ export default function EditSubjectModal({ isOpen, onClose, onSubmit, subject })
                 className="w-full px-3 py-2 bg-[#DEE8F1] border border-[#014482] rounded focus:outline-none focus:ring-2 focus:ring-[#0389BC]"
                 required
               >
-                <option value="School Pro">School Pro</option>
-                <option value="O/L Pro">O/L Pro</option>
+                <option value="School">School</option>
+                <option value="O/L">O/L</option>
                 <option value="A/L">A/L</option>
               </select>
             </div>

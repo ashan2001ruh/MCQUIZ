@@ -44,7 +44,7 @@ const Pricing = () => {
 
     try {
       const planAmounts = {
-        'Schol Pro': 1500,
+        'School Pro': 1500,
         'O/L Pro': 2000,
         'A/L Pro': 2500
       };
@@ -105,7 +105,7 @@ const Pricing = () => {
       buttonColor: 'bg-[#018ABD] text-white font-semibold px-6 py-2 rounded-2xl text-sm hover:bg-[#005fa3] transition duration-200',
     },
     {
-      title: 'Schol Pro',
+      title: 'School Pro',
       price: 'Rs. 1500',
       features: [
         'Tailored for students preparing for the Grade 5 Scholarship exam.',

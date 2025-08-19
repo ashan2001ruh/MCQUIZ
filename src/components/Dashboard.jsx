@@ -466,8 +466,8 @@ export default function Dashboard() {
               onChange={handleLevelFilter}
             >
               <option value="">All Levels</option>
-              <option value="School Pro">School Pro</option>
-              <option value="O/L Pro">O/L Pro</option>
+              <option value="School">School</option>
+              <option value="O/L">O/L</option>
               <option value="A/L">A/L</option>
             </select>
           </div>
@@ -635,6 +635,24 @@ export default function Dashboard() {
           
           <div>
             <select
+<<<<<<< Updated upstream
+=======
+              name="subscriptionLevel"
+              value={filters.subscriptionLevel}
+              onChange={handleFilterChange}
+              className="w-full px-3 py-2 text-[#014482] border bg-[#DEE8F1] border-[#014482] rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm"
+            >
+                             <option value="">All Subscription Levels</option>
+                              <option value="Basic">Basic</option>
+                                               <option value="School Pro">School Pro</option>
+                <option value="O/L Pro">O/L Pro</option>
+                <option value="A/L Pro">A/L Pro</option>
+            </select>
+          </div>
+          
+          <div>
+            <select
+>>>>>>> Stashed changes
               name="active"
               value={filters.active}
               onChange={handleFilterChange}
@@ -704,6 +722,18 @@ export default function Dashboard() {
                     </span>
                   </td>
                   <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
+<<<<<<< Updated upstream
+=======
+                                                              <span className={`px-2 inline-flex text-xs leading-5 rounded-full 
+                        ${quiz.subscriptionLevel === 'Basic' ? 'bg-blue-100 text-blue-800' : 
+                          quiz.subscriptionLevel === 'School Pro' ? 'bg-purple-100 text-purple-800' : 
+                          quiz.subscriptionLevel === 'O/L Pro' ? 'bg-orange-100 text-orange-800' : 
+                          'bg-red-100 text-red-800'}`}>
+                        {quiz.subscriptionLevel}
+                      </span>
+                  </td>
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
+>>>>>>> Stashed changes
                     <span className={`px-2 inline-flex text-xs leading-5 rounded-full 
                       ${quiz.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {quiz.isActive ? 'Active' : 'Inactive'}
