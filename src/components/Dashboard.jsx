@@ -468,8 +468,8 @@ export default function Dashboard() {
               onChange={handleLevelFilter}
             >
               <option value="">All Levels</option>
-              <option value="School Pro">School Pro</option>
-              <option value="O/L Pro">O/L Pro</option>
+              <option value="School">School</option>
+              <option value="O/L">O/L</option>
               <option value="A/L">A/L</option>
             </select>
           </div>
