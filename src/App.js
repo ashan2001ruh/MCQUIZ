@@ -17,6 +17,7 @@ import Signup from './components/SignupPage/signupform';
 import imageA from './Assets/ImageA.png';
 import imageD from './Assets/ImageD.png';
 import imageC from './Assets/ImageC.png';
+import OAuthCallback from './components/LoginPage/OAuthCallback';
 
 function App() {
   const homeRef = useRef(null);
@@ -97,6 +98,9 @@ function App() {
             </div>
           }
         />
+        
+        {/* OAuth Callback Route */}
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         
         {/* Signup Route */}
         <Route

@@ -57,7 +57,8 @@ export default function Form() {
   };
 
   const handleGoogleSignIn = () => {
-    window.location.href = 'http://localhost:3001/auth/google';
+    const redirectFrom = from || '/';
+    window.location.href = `http://localhost:3001/auth/google?from=${encodeURIComponent(redirectFrom)}`;
   };
 
   return (
