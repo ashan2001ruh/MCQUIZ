@@ -11,6 +11,7 @@ import SubjectQuizzes from './components/SubjectQuizzes';
 import QuizAttempts from './components/QuizAttempts';
 import UserDashboard from './components/UserDashboard'
 import QuizHistory from './components/QuizHistory'
+import FeedbackStats from './components/FeedbackStats';
 
 import Form from './components/LoginPage/loginform';
 import Signup from './components/SignupPage/signupform';
@@ -48,6 +49,7 @@ function App() {
               <div ref={pricingRef}>
                 <Pricing />
               </div>
+              <FeedbackStats />
               <div ref={aboutUsRef}>
                 <Aboutus
                   homeRef={homeRef}

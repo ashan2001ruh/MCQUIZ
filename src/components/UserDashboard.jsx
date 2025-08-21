@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import FeedbackSection from './FeedbackSection';
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -510,6 +511,9 @@ const UserDashboard = () => {
           </p>
         </div>
       </footer>
+
+      {/* Feedback Section */}
+      <FeedbackSection />
     </div>
   );
 };
