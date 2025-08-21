@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import AddQuiz from './AddQuiz'; 
@@ -8,6 +8,7 @@ import AddSubjectModal from './modals/AddSubjectModal';
 import EditSubjectModal from './modals/EditSubjectModal';
 import DeleteConfirmModal from './modals/DeleteConfirmModal';
 import { FaSearch, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import AdminFeedbackManagement from './AdminFeedbackManagement';
 
 export default function Dashboard() {
   const [adminData, setAdminData] = useState(null);
@@ -913,6 +914,11 @@ export default function Dashboard() {
       subject={currentSubject}
     />
   )}
+
+  {/* Feedback Management Section */}
+  <div className="mt-8">
+    <AdminFeedbackManagement />
+  </div>
 </div>
   );
 }
