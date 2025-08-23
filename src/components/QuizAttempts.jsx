@@ -434,7 +434,7 @@ const QuizAttempt = () => {
                   <div>
                     <p style={{ color: '#004581' }}>Score</p>
                     <p className={`text-2xl font-bold ${getScoreColor(submissionResult.score)}`}>
-                      {submissionResult.score.toFixed(1)}%
+                      {submissionResult.score.toFixed(2)}%
                     </p>
                   </div>
                   <div>
