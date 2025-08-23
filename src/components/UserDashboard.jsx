@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import FeedbackSection from './FeedbackSection';
+import OnlineTestImage from '../Assets/Online test-amico.png';
+import ImageA from '../Assets/ImageA.png';
+import ImageB from '../Assets/ImageB.png';
+import ImageC from '../Assets/ImageC.png';
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -105,7 +108,8 @@ const UserDashboard = () => {
               quiz: {
                 title: attempt.quizTitle || 'Unknown Quiz',
                 subject: { name: attempt.subjectName || 'Unknown Subject' },
-                difficulty: attempt.difficulty || 'Medium'
+                difficulty: attempt.difficulty || 'Medium',
+                subscriptionLevel: attempt.subscriptionLevel || 'Basic'
               },
               score: { percentage: attempt.score || 0 },
               passed: attempt.passed || false,
@@ -207,7 +211,8 @@ const UserDashboard = () => {
             quiz: {
               title: attempt.quizTitle || 'Unknown Quiz',
               subject: { name: attempt.subjectName || 'Unknown Subject' },
-              difficulty: attempt.difficulty || 'Medium'
+              difficulty: attempt.difficulty || 'Medium',
+              subscriptionLevel: attempt.subscriptionLevel || 'Basic'
             },
             score: { percentage: attempt.score || 0 },
             passed: attempt.passed || false,
@@ -264,10 +269,13 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#DDE8F0]">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DDE8F0] to-[#B8D4E3]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#018ABD] mx-auto mb-4"></div>
-          <p className="text-[#004581]">Loading your dashboard...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#018ABD] mx-auto mb-6"></div>
+          <p className="text-[#004581] text-lg font-medium">Loading your dashboard...</p>
+          <div className="mt-4">
+            <img src={OnlineTestImage} alt="Loading" className="w-32 h-32 mx-auto opacity-50" />
+          </div>
         </div>
       </div>
     );
@@ -275,14 +283,14 @@ const UserDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#DDE8F0]">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center border border-[#004581]">
-          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DDE8F0] to-[#B8D4E3]">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border-2 border-[#004581]">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold mb-4 text-[#004581]">Error Loading Dashboard</h2>
           <p className="mb-6 text-[#004581]">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-[#018ABD] text-white px-6 py-3 rounded-full hover:bg-[#004581] transition-colors"
+            className="bg-gradient-to-r from-[#018ABD] to-[#004581] text-white px-8 py-3 rounded-full hover:shadow-lg transition-all transform hover:scale-105"
           >
             Try Again
           </button>
@@ -292,27 +300,32 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#DDE8F0]">
+    <div className="min-h-screen bg-gradient-to-br from-[#DDE8F0] to-[#B8D4E3]">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#014482] to-[#0389BC] shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="bg-gradient-to-r from-[#014482] via-[#0389BC] to-[#018ABD] shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">MCQuiz Dashboard</h1>
             <div className="flex items-center space-x-4">
-              <span className="text-white font-medium">
-                Welcome, {user?.firstName || 'User'}!
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h1 className="text-3xl font-bold text-white">MCQuiz Dashboard</h1>
+            </div>
+            <div className="flex items-center space-x-6">
+              <span className="text-white font-medium text-lg">
+                Welcome, {user?.firstName || 'User'}! 👋
               </span>
               <button
                 onClick={handleRefresh}
-                className="text-white hover:text-gray-200 px-4 py-2 rounded flex items-center space-x-1"
+                className="text-white hover:text-gray-200 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all flex items-center space-x-2"
                 title="Refresh Dashboard Data"
               >
-                <span>🔄</span>
-                <span className="hidden sm:inline">Refresh</span>
+                <span className="text-xl">🔄</span>
+                <span className="hidden sm:inline font-medium">Refresh</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="text-white hover:text-gray-200 px-4 py-2 rounded"
+                className="text-white hover:text-gray-200 px-6 py-2 rounded-full bg-red-500/20 backdrop-blur-sm hover:bg-red-500/30 transition-all font-medium"
               >
                 Logout
               </button>
@@ -323,197 +336,275 @@ const UserDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Banner */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-[#018ABD]">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-[#004581] mb-2">
-                Welcome to your Learning Dashboard! 👋
+        {/* Welcome Banner with Image */}
+        <div className="bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-xl p-8 mb-8 border-2 border-[#018ABD] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
+            <img src={ImageA} alt="Decoration" className="w-full h-full object-cover" />
+          </div>
+          <div className="relative z-10 flex justify-between items-start">
+            <div className="flex-1">
+              <h2 className="text-3xl font-bold text-[#004581] mb-3 flex items-center">
+                <span className="mr-3">🚀</span>
+                Welcome to your Learning Dashboard!
               </h2>
-              <p className="text-[#004581] opacity-80">
-                Track your progress, view your enrolled courses, and continue your learning journey.
+              <p className="text-[#004581] opacity-80 text-lg leading-relaxed">
+                Track your progress, view your enrolled courses, and continue your learning journey with our interactive quiz platform.
               </p>
             </div>
-            {lastUpdated && (
-              <div className="text-right">
-                <p className="text-xs text-gray-500">
-                  Last updated: {lastUpdated.toLocaleTimeString()}
+            <div className="hidden lg:block ml-8">
+              <img src={OnlineTestImage} alt="Online Test" className="w-48 h-48 object-contain" />
+            </div>
+          </div>
+          {lastUpdated && (
+            <div className="absolute bottom-4 right-4 text-right">
+              <p className="text-xs text-gray-500 bg-white/80 px-3 py-1 rounded-full">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Stats Cards with Enhanced Design */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl shadow-xl p-6 border-2 border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-blue-900">Quizzes Taken</h3>
+              <span className="text-2xl group-hover:scale-110 transition-transform">📝</span>
+            </div>
+            <p className="text-4xl font-bold text-blue-600 mb-2">{stats.quizzesTaken || 0}</p>
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full" style={{width: `${Math.min((stats.quizzesTaken || 0) * 10, 100)}%`}}></div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl shadow-xl p-6 border-2 border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-blue-900">Average Score</h3>
+              <span className="text-2xl group-hover:scale-110 transition-transform">🎯</span>
+            </div>
+            <p className="text-4xl font-bold text-blue-600 mb-2">
+              {Number.isInteger(stats.averageScore || 0) ? (stats.averageScore || 0) : (stats.averageScore || 0).toFixed(2)}%
+            </p>
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full" style={{width: `${stats.averageScore || 0}%`}}></div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl shadow-xl p-6 border-2 border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-blue-900">Improvement</h3>
+              <span className="text-2xl group-hover:scale-110 transition-transform">📈</span>
+            </div>
+            <p className="text-4xl font-bold text-blue-600 mb-2">
+              {(stats.improvement || 0) > 0 ? '+' : ''}
+              {Number.isInteger(stats.improvement || 0) ? (stats.improvement || 0) : (stats.improvement || 0).toFixed(2)}%
+            </p>
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full" style={{width: `${Math.abs(stats.improvement || 0)}%`}}></div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl shadow-xl p-6 border-2 border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-blue-900">Pass Rate</h3>
+              <span className="text-2xl group-hover:scale-110 transition-transform">🏆</span>
+            </div>
+            <p className="text-4xl font-bold text-blue-600 mb-2">
+              {Number.isInteger(stats.passRate || 0) ? (stats.passRate || 0) : (stats.passRate || 0).toFixed(2)}%
+            </p>
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full" style={{width: `${stats.passRate || 0}%`}}></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity with Enhanced Design */}
+        <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl shadow-xl p-8 border-2 border-blue-200 mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 opacity-10">
+            <img src={ImageB} alt="Decoration" className="w-full h-full object-cover" />
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-3xl font-bold text-blue-900 mb-8 flex items-center">
+              <span className="mr-3 text-4xl">📊</span>
+              Recent Quiz Attempts
+            </h3>
+
+            {recentQuizzes.length > 0 ? (
+              <div className="grid gap-6">
+                {recentQuizzes.map((quiz, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl shadow-lg p-6 flex justify-between items-center border-2 border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform hover:scale-[1.02]"
+                  >
+                    {/* Left side: quiz info */}
+                    <div className="flex-1">
+                      <h4 className="font-bold text-blue-900 text-lg mb-2">
+                        {quiz.quiz?.title || 'Quiz'}
+                      </h4>
+                      <p className="text-gray-600 mb-3 flex items-center">
+                        <span className="mr-2">📚</span>
+                        {quiz.quiz?.subject?.name || 'Subject'} • {formatDate(quiz.submittedAt)}
+                      </p>
+
+                      {quiz.quiz?.difficulty && (
+                        <span
+                          className={`inline-block text-sm px-3 py-1 rounded-full font-medium ${getDifficultyColor(
+                            quiz.quiz.difficulty
+                          )}`}
+                        >
+                          {quiz.quiz.difficulty}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Right side: results */}
+                    <div className="text-right ml-6">
+                      <span
+                        className={`px-4 py-2 rounded-full text-sm font-bold mb-3 inline-block ${
+                          quiz.passed
+                            ? 'bg-green-100 text-green-800 border-2 border-green-300'
+                            : 'bg-red-100 text-red-800 border-2 border-red-300'
+                        }`}
+                      >
+                        {quiz.passed ? '✅ Passed' : '❌ Failed'}
+                      </span>
+                                                                     <p
+                          className={`text-4xl font-bold ${getScoreColor(
+                            quiz.score?.percentage || 0
+                          )}`}
+                        >
+                          {Number.isInteger(quiz.score?.percentage || 0) ? (quiz.score?.percentage || 0) : (quiz.score?.percentage || 0).toFixed(2)}%
+                        </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-4xl">📝</span>
+                </div>
+                <p className="text-blue-900 opacity-80 mb-6 text-lg">
+                  No recent quiz attempts found.
                 </p>
+                <Link
+                  to="/courses"
+                  className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-full text-lg font-medium hover:shadow-lg transition-all transform hover:scale-105"
+                >
+                  Take Your First Quiz
+                </Link>
               </div>
             )}
           </div>
-          <Link
-            to="/courses"
-            className="bg-[#018ABD] text-white px-6 py-3 rounded-full font-medium hover:bg-[#004581] transition-colors inline-block"
-          >
-            Browse Courses
-          </Link>
-        </div>
+        </div>  
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Quizzes Taken</h3>
-            <p className="text-3xl font-bold text-[#018ABD]">{stats.quizzesTaken || 0}</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Average Score</h3>
-            <p className={`text-3xl font-bold ${getScoreColor(stats.averageScore || 0)}`}>
-              {stats.averageScore || 0}%
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Improvement</h3>
-            <p className={`text-3xl font-bold ${(stats.improvement || 0) > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {(stats.improvement || 0) > 0 ? '+' : ''}{stats.improvement || 0}%
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Pass Rate</h3>
-            <p className="text-3xl font-bold text-[#018ABD]">{stats.passRate || 0}%</p>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD] mb-8">
-          <h3 className="text-xl font-bold text-[#004581] mb-6">Recent Quiz Attempts</h3>
-          {recentQuizzes.length > 0 ? (
-            <div className="space-y-4">
-              {recentQuizzes.map((quiz, index) => (
-                <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
-                  <div className="flex justify-between items-center">
-                                       <div>
-                     <h4 className="font-medium text-[#004581]">{quiz.quiz?.title || 'Quiz'}</h4>
-                     <p className="text-sm text-gray-600">
-                       {quiz.quiz?.subject?.name || 'Subject'} • {formatDate(quiz.submittedAt)}
-                     </p>
-                   </div>
-                   <div className="text-right">
-                     <span className={`px-2 py-1 rounded-full text-sm ${quiz.passed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                       {quiz.passed ? 'Passed' : 'Failed'}
-                     </span>
-                     <p className={`text-lg font-bold ${getScoreColor(quiz.score?.percentage || 0)}`}>
-                       {quiz.score?.percentage || 0}%
-                     </p>
-                   </div>
-                  </div>
-                                     {quiz.quiz?.difficulty && (
-                     <div className="mt-2">
-                       <span className={`text-xs px-2 py-1 rounded ${getDifficultyColor(quiz.quiz.difficulty)}`}>
-                         {quiz.quiz.difficulty}
-                       </span>
-                     </div>
-                   )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-[#004581] opacity-80 mb-4">No recent quiz attempts found.</p>
+        {/* Quick Actions with Enhanced Design */}
+        {user?.subscriptionLevel === 'Basic' && (
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl p-8 border-2 border-gray-200 mb-8">
+            <h3 className="text-2xl font-bold text-[#004581] mb-6 flex items-center">
+              <span className="mr-3 text-3xl">⚡</span>
+              Quick Actions
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <Link
                 to="/courses"
-                className="inline-block bg-[#018ABD] text-white px-4 py-2 rounded-full text-sm hover:bg-[#004581] transition-colors"
+                className="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 border-2 border-blue-200 hover:shadow-xl hover:border-blue-400 transition-all duration-300 transform hover:scale-105 text-center group"
               >
-                Take Your First Quiz
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">🎯</span>
+                </div>
+                <h4 className="font-bold text-[#004581] text-lg mb-2">Try More Quizzes</h4>
+                <p className="text-gray-600">Explore our quiz collection</p>
+              </Link>
+
+              <Link
+                to="/quiz-history"
+                className="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-lg p-6 border-2 border-green-200 hover:shadow-xl hover:border-green-400 transition-all duration-300 transform hover:scale-105 text-center group"
+              >
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">📚</span>
+                </div>
+                <h4 className="font-bold text-[#004581] text-lg mb-2">Quiz History</h4>
+                <p className="text-gray-600">View past attempts</p>
+              </Link>
+
+              <Link
+                to="/#pricing-section"
+                className="bg-gradient-to-br from-purple-50 to-white rounded-xl shadow-lg p-6 border-2 border-purple-200 hover:shadow-xl hover:border-purple-400 transition-all duration-300 transform hover:scale-105 text-center group"
+              >
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">💎</span>
+                </div>
+                <h4 className="font-bold text-[#004581] text-lg mb-2">Go Premium</h4>
+                <p className="text-gray-600">Upgrade your plan</p>
               </Link>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Enrolled Courses */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD] mb-8">
-          <h3 className="text-xl font-bold text-[#004581] mb-6">My Enrolled Courses</h3>
-          {enrolledSubjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {enrolledSubjects.map((course, index) => (
-                <div key={course._id || index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-[#004581]">{course.name}</h4>
-                    <span className={`text-xs px-2 py-1 rounded ${course.isEnrolled ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                      {course.isEnrolled ? 'Active' : 'Available'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">{course.description || 'No description available'}</p>
-                  <p className="text-xs text-gray-500 mb-4">Level: {course.level}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      {course.isEnrolled ? 'Continue learning' : 'Start learning'}
-                    </span>
-                    <Link
-                      to={`/subject/${course._id}/quizzes`}
-                      className="bg-[#018ABD] text-white px-4 py-2 rounded text-sm hover:bg-[#004581] transition-colors"
-                    >
-                      {course.isEnrolled ? 'Continue' : 'Start'}
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-[#004581] opacity-80 mb-4">No enrolled courses found.</p>
+        {/* Quick Actions for pro users */}
+        {user?.subscriptionLevel !== 'Basic' && (
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl p-8 border-2 border-gray-200 mb-8">
+            <h3 className="text-2xl font-bold text-[#004581] mb-6 flex items-center">
+              <span className="mr-3 text-3xl">🚀</span>
+              Premium Actions
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Link
                 to="/courses"
-                className="inline-block bg-[#018ABD] text-white px-6 py-3 rounded-full font-medium hover:bg-[#004581] transition-colors"
+                className="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 border-2 border-blue-200 hover:shadow-xl hover:border-blue-400 transition-all duration-300 transform hover:scale-105 text-center group"
               >
-                Browse Courses
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">🎯</span>
+                </div>
+                <h4 className="font-bold text-[#004581] text-lg mb-2">Try More Quizzes</h4>
+                <p className="text-gray-600">Explore our quiz collection</p>
+              </Link>
+
+              <Link
+                to="/quiz-history"
+                className="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-lg p-6 border-2 border-green-200 hover:shadow-xl hover:border-green-400 transition-all duration-300 transform hover:scale-105 text-center group"
+              >
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">📚</span>
+                </div>
+                <h4 className="font-bold text-[#004581] text-lg mb-2">Quiz History</h4>
+                <p className="text-gray-600">View past attempts</p>
               </Link>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Motivation Section */}
+        <div className="bg-gradient-to-r from-[#004581] to-[#018ABD] rounded-2xl shadow-xl p-8 text-white text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 opacity-20">
+            <img src={ImageC} alt="Decoration" className="w-full h-full object-cover" />
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-3xl font-bold mb-4">Keep Learning, Keep Growing!</h3>
+            <p className="text-xl opacity-90 mb-6">
+              Every quiz is a step towards knowledge. You're doing amazing!
+            </p>
+          </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link
-            to="/courses"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Browse Courses</h4>
-            <p className="text-sm text-gray-600 mt-1">Explore new subjects</p>
-          </Link>
-
-          <Link
-            to="/quiz-history"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Quiz History</h4>
-            <p className="text-sm text-gray-600 mt-1">View past attempts</p>
-          </Link>
-
-          <Link
-            to="/subscription"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Premium</h4>
-            <p className="text-sm text-gray-600 mt-1">Upgrade your plan</p>
-          </Link>
-
-          <Link
-            to="/profile"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Profile</h4>
-            <p className="text-sm text-gray-600 mt-1">Manage settings</p>
-          </Link>
-        </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#014482] text-white py-8 mt-16">
+      <footer className="bg-gradient-to-r from-[#014482] to-[#0389BC] text-white py-12 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-xl font-bold mb-2">MCQuiz</h2>
-          <p className="text-sm opacity-80 mb-4">Your MCQ learning companion</p>
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+              <span className="text-2xl">🎯</span>
+            </div>
+            <h2 className="text-2xl font-bold">MCQuiz</h2>
+          </div>
+          <p className="text-lg opacity-90 mb-4">Your MCQ learning companion</p>
           <p className="text-sm opacity-80">
             &copy; {new Date().getFullYear()} MCQuiz. All rights reserved.
           </p>
         </div>
       </footer>
-
-      {/* Feedback Section */}
-      <FeedbackSection />
     </div>
   );
 };

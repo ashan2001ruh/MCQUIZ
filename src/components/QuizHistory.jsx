@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ReviewAnswersModal from './modals/ReviewAnswersModal';
 
 const QuizHistory = () => {
   const [quizAttempts, setQuizAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedAttemptId, setSelectedAttemptId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +105,17 @@ const QuizHistory = () => {
 
   const getPassStatusColor = (passed) => {
     return passed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+  };
+
+  const handleReviewAnswers = (attemptId) => {
+    console.log('Opening review modal for attempt ID:', attemptId);
+    setSelectedAttemptId(attemptId);
+    setReviewModalOpen(true);
+  };
+
+  const closeReviewModal = () => {
+    setReviewModalOpen(false);
+    setSelectedAttemptId(null);
   };
 
   if (loading) {
@@ -202,7 +216,7 @@ const QuizHistory = () => {
                           <div className="text-center">
                             <p className="text-sm text-gray-600">Score</p>
                             <p className={`text-xl font-bold ${getScoreColor(attempt.score?.percentage || 0)}`}>
-                              {attempt.score?.percentage || 0}%
+                              {(attempt.score?.percentage || 0).toFixed(2)}%
                             </p>
                           </div>
                           <div className="text-center">
@@ -239,8 +253,9 @@ const QuizHistory = () => {
                       <button
                         className="bg-gray-100 text-[#004581] px-4 py-2 rounded text-sm hover:bg-gray-200 transition-colors"
                         onClick={() => {
-                          // TODO: Implement detailed review functionality
-                          alert('Detailed review feature coming soon!');
+                          console.log('Attempt object:', attempt);
+                          console.log('Attempt ID:', attempt.id);
+                          handleReviewAnswers(attempt.id);
                         }}
                       >
                         Review Answers
@@ -400,7 +415,7 @@ const QuizHistory = () => {
                          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD] text-center">
                <h4 className="text-lg font-semibold text-[#004581] mb-2">Average Score</h4>
                <p className="text-3xl font-bold text-[#018ABD]">
-                 {Math.round(quizAttempts.reduce((sum, attempt) => sum + attempt.score.percentage, 0) / quizAttempts.length)}%
+                 {(quizAttempts.reduce((sum, attempt) => sum + attempt.score.percentage, 0) / quizAttempts.length).toFixed(2)}%
                </p>
              </div>
             <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD] text-center">
@@ -423,6 +438,13 @@ const QuizHistory = () => {
           </p>
         </div>
       </footer>
+
+      {/* Review Answers Modal */}
+      <ReviewAnswersModal
+        isOpen={reviewModalOpen}
+        onClose={closeReviewModal}
+        attemptId={selectedAttemptId}
+      />
     </div>
   );
 };

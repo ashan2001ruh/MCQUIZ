@@ -75,6 +75,8 @@ const Hero = () => {
             />
           </motion.div>
 
+
+
           {/* Button */}
           {!user && (
             <motion.button
