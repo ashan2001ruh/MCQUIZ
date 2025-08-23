@@ -4,6 +4,7 @@ import OnlineTestImage from '../Assets/Online test-amico.png';
 import ImageA from '../Assets/ImageA.png';
 import ImageB from '../Assets/ImageB.png';
 import ImageC from '../Assets/ImageC.png';
+import FeedbackSection from './FeedbackSection';
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -605,6 +606,9 @@ const UserDashboard = () => {
           </p>
         </div>
       </footer>
+
+       {/* Feedback Section */}
+      <FeedbackSection />
     </div>
   );
 };
