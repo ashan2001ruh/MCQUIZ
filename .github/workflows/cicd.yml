@@ -22,6 +22,6 @@ jobs:
       - name: Pull image from docker hub
         run: docker pull ashank2001/mcquizfrontend:latest
       - name: Delete old container
-        run: docker rm -f reactjs-app-container
+        run: docker rm -f mcquizfrontend-container 
       - name: Run Docker Container
         run: docker run -d -p 3000:80 --name mcquizfrontend-container ashank2001/mcquizfrontend
