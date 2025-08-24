@@ -19,6 +19,7 @@ const Courses = () => {
     'O/L Pro': ['O/L'],
     'School Pro': ['Scholarship']
   };
+  
   const canAccessSubject = (subjectLevel) => {
     const userSub = user.subscriptionLevel || 'Basic';
     const allowedLevels = subscriptionAccess[userSub] || [];
@@ -31,6 +32,14 @@ const Courses = () => {
   const getAuthHeader = () => {
     const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  const handleLevelChange = (level) => {
+    setSelectedLevel(level);
+  };
+
+  const resetFilter = () => {
+    setSelectedLevel('');
   };
   
   useEffect(() => {
@@ -56,7 +65,12 @@ const Courses = () => {
           setSubjects(subjectsData);
           if (Array.isArray(subjectsData)) {
             const uniqueLevels = [...new Set(subjectsData.map(subject => subject.level).filter(Boolean))];
-            setLevels(uniqueLevels);
+            // Sort levels in the desired order: A/L, O/L, Scholarship
+            const sortedLevels = uniqueLevels.sort((a, b) => {
+              const order = { 'A/L': 1, 'O/L': 2, 'Scholarship': 3 };
+              return (order[a] || 999) - (order[b] || 999);
+            });
+            setLevels(sortedLevels);
           }
         }
         setLoading(false);
@@ -159,30 +173,38 @@ const Courses = () => {
       <h1 className="text-3xl font-bold mb-6 text-center">
         <span className="text-[#014482]">All </span>
         <span className="text-[#018ABE]">Courses</span>
-      </h1> 
+      </h1>
       
-      <div className="border border-[#018ABE] py-6 mb-8">
-      <div className="container mx-auto flex justify-center">
-      <button
-        onClick={() => navigate('/')}
-        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#014482] to-[#018ABE] text-white font-semibold rounded-full shadow hover:shadow-lg hover:scale-105 transition-all duration-300"
-      >
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m0 0h4m-4 0H7m6-6h2a2 2 0 012 2v4a2 2 0 01-2 2h-2"
-        />
-      </svg>
-          Go to Home
-      </button>
-      </div>
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Filter by Level:</h2>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <button
+            onClick={resetFilter}
+            className={`px-4 py-2 rounded-3xl border border-[#014482] text-[#014482] ${
+              !selectedLevel 
+                ? 'bg-[#014482] text-white' 
+                : 'bg-transparent hover:bg-gray-100'
+            }`}
+          >
+            All Subjects
+          </button>
+          {levels.map((level) => (
+            <button
+              key={level}
+              onClick={() => handleLevelChange(level === 'School' ? 'Scholarship' : level)}
+              className={`px-4 py-2 rounded-3xl border border-[#014482] text-[#014482] ${
+                selectedLevel === level 
+                  ? 'bg-[#014482] text-white' 
+                  : 'bg-transparent hover:bg-gray-100'
+              }`}
+            >
+              {level === "School" ? "Scholarship" :
+               level === "Scholarship" ? "Scholarship" : 
+               level === "O/L" ? "O/L" : 
+               level === "A/L" ? "A/L" : level}
+            </button>
+          ))}
+        </div>
       </div>
 
 
