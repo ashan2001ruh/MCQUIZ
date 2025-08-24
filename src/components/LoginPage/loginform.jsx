@@ -19,7 +19,7 @@ export default function Form() {
     e.preventDefault();
     try {
       try {
-        const adminResponse = await Axios.post('http://localhost:3001/api/admin/login', {
+        const adminResponse = await Axios.post('/api/admin/login', {
           email,
           password,
         });
@@ -36,7 +36,7 @@ export default function Form() {
         console.log("Not an admin, trying user login");
       }
 
-      const userResponse = await Axios.post('http://localhost:3001/api/login', {
+      const userResponse = await Axios.post('/api/login', {
         email,
         password,
       });
@@ -60,7 +60,7 @@ export default function Form() {
 
   const handleGoogleSignIn = () => {
     const redirectFrom = from || '/';
-    window.location.href = `http://localhost:3001/auth/google?from=${encodeURIComponent(redirectFrom)}`;
+    window.location.href = `/api/auth/google?from=${encodeURIComponent(redirectFrom)}`;
   };
 
   return (
