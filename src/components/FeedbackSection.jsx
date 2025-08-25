@@ -19,7 +19,7 @@ const FeedbackSection = () => {
       const token = localStorage.getItem('authToken');
       if (!token) return;
 
-      const response = await fetch('http://localhost:3001/api/feedback/user?limit=5', {
+      const response = await fetch('/api/feedback/user?limit=5', {
         headers: {
           Authorization: `Bearer ${token}`
         }

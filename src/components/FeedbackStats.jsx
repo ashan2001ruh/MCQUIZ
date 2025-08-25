@@ -14,7 +14,7 @@ const FeedbackStats = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/feedback/public-stats');
+      const response = await fetch('/api/feedback/public-stats');
       if (response.ok) {
         const data = await response.json();
         setStats(data);
