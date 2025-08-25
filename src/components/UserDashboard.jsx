@@ -63,7 +63,7 @@ const UserDashboard = () => {
 
         // Fetch updated user profile data to get latest profile picture
         try {
-          const userResponse = await fetch('http://localhost:3001/api/user/profile', {
+          const userResponse = await fetch('/api/user/profile', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (userResponse.ok) {
@@ -79,7 +79,7 @@ const UserDashboard = () => {
 
         // Fetch user stats
         try {
-          const statsResponse = await fetch('http://localhost:3001/api/user/stats', {
+          const statsResponse = await fetch('/api/user/stats', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (statsResponse.ok) {
@@ -102,7 +102,7 @@ const UserDashboard = () => {
 
         // Fetch recent quiz attempts
         try {
-          const quizzesResponse = await fetch('http://localhost:3001/api/user/recent-quizzes', {
+          const quizzesResponse = await fetch('/api/user/recent-quizzes', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (quizzesResponse.ok) {
@@ -445,7 +445,7 @@ const UserDashboard = () => {
               <div className="flex items-center space-x-2">
                 {user?.profilePicture && user.profilePicture.trim() !== '' ? (
                   <img
-                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `http://localhost:3001/${user.profilePicture}`}
+                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `/api/${user.profilePicture}`}
                     alt="Profile"
                     className="w-10 h-10 rounded-full object-cover border-2 border-[#018ABD]"
                   />

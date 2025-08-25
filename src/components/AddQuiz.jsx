@@ -36,7 +36,7 @@ const AddQuiz = ({ isOpen, onClose, onQuizAdded }) => {
   const fetchSubjects = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await Axios.get('http://localhost:3001/api/admin/subjects', {
+      const response = await Axios.get('/api/admin/subjects', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -128,7 +128,7 @@ const AddQuiz = ({ isOpen, onClose, onQuizAdded }) => {
     
     try {
       const token = localStorage.getItem('authToken');
-      const response = await Axios.post('http://localhost:3001/api/admin/quizzes', quizData, {
+      const response = await Axios.post('/api/admin/quizzes', quizData, {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -26,7 +26,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/password-reset/request-reset', {
+      const response = await fetch('/api/password-reset/request-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/password-reset/verify-otp', {
+      const response = await fetch('/api/password-reset/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/password-reset/reset-password', {
+      const response = await fetch('/api/password-reset/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/password-reset/request-reset', {
+      const response = await fetch('/api/password-reset/request-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

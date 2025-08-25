@@ -25,7 +25,7 @@ const AdminFeedbackManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       const response = await fetch(
-        `http://localhost:3001/api/feedback/all?page=${currentPage}&limit=10&filter=${filter}`,
+        `/api/feedback/all?page=${currentPage}&limit=10&filter=${filter}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -48,7 +48,7 @@ const AdminFeedbackManagement = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/feedback/stats', {
+      const response = await fetch('/api/feedback/stats', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -68,7 +68,7 @@ const AdminFeedbackManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/feedback/${feedbackId}`, {
+      const response = await fetch(`/api/feedback/${feedbackId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`

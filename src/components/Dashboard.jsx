@@ -67,7 +67,7 @@ export default function Dashboard() {
       }
       
       try {
-        const response = await Axios.get('http://localhost:3001/api/admin/profile', {
+        const response = await Axios.get('/api/admin/profile', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -100,7 +100,7 @@ export default function Dashboard() {
       const token = localStorage.getItem('authToken');
       const { search, subject, difficulty, active, subscriptionLevel } = filters;
       
-      let url = `http://localhost:3001/api/admin/quizzes?page=${page}&limit=${pagination.limit}`;
+      let url = `/api/admin/quizzes?page=${page}&limit=${pagination.limit}`;
       
       if (search) url += `&search=${search}`;
       if (subject) url += `&subject=${subject}`;
@@ -131,7 +131,7 @@ export default function Dashboard() {
   const fetchQuizStats = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await Axios.get('http://localhost:3001/api/admin/quizzes/stats', {
+      const response = await Axios.get('/api/admin/quizzes/stats', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -147,7 +147,7 @@ export default function Dashboard() {
   const fetchSubjectStats = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await Axios.get('http://localhost:3001/api/admin/subjects/stats', {
+      const response = await Axios.get('/api/admin/subjects/stats', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -172,7 +172,7 @@ export default function Dashboard() {
         limit: subjectFilters.limit
       }).toString();
       
-      const response = await Axios.get(`http://localhost:3001/api/admin/subjects?${queryParams}`, {
+      const response = await Axios.get(`/api/admin/subjects?${queryParams}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -220,7 +220,7 @@ export default function Dashboard() {
     if (action === 'edit') {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await Axios.get(`http://localhost:3001/api/admin/quizzes/${id}`, {
+        const response = await Axios.get(`/api/admin/quizzes/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -277,7 +277,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('authToken');
     
     try {
-      await Axios.post('http://localhost:3001/api/admin/subjects', subjectData, {
+      await Axios.post('/api/admin/subjects', subjectData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -297,7 +297,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('authToken');
     
     try {
-      await Axios.put(`http://localhost:3001/api/admin/subjects/${currentSubject._id}`, subjectData, {
+      await Axios.put(`/api/admin/subjects/${currentSubject._id}`, subjectData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -317,7 +317,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('authToken');
     
     try {
-      await Axios.delete(`http://localhost:3001/api/admin/subjects/${currentSubject._id}`, {
+      await Axios.delete(`/api/admin/subjects/${currentSubject._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

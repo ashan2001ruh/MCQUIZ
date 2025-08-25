@@ -32,7 +32,7 @@ const QuizHistory = () => {
 
         // Fetch quiz history from backend - get all attempts (no pagination)
         console.log('Making API call with token:', token ? 'Token exists' : 'No token');
-        const response = await fetch('http://localhost:3001/api/user-attempts/history?limit=1000', {
+        const response = await fetch('/api/user-attempts/history?limit=1000', {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -282,7 +282,7 @@ const QuizHistory = () => {
                                    <div className="mt-4 space-y-2">
                     <button
                       onClick={() => {
-                        fetch('http://localhost:3001/api/test/database')
+                        fetch('/api/test/database')
                           .then(res => res.json())
                           .then(data => {
                             console.log('Database test result:', data);
@@ -299,7 +299,7 @@ const QuizHistory = () => {
                     </button>
                                          <button
                        onClick={() => {
-                         fetch('http://localhost:3001/api/fix-attempts')
+                         fetch('/api/fix-attempts')
                            .then(res => res.json())
                            .then(data => {
                              console.log('Fix attempts result:', data);
@@ -317,7 +317,7 @@ const QuizHistory = () => {
                      </button>
                                            <button
                         onClick={() => {
-                          fetch('http://localhost:3001/api/create-test-attempt')
+                          fetch('/api/create-test-attempt')
                             .then(res => res.json())
                             .then(data => {
                               console.log('Create test attempt result:', data);
@@ -335,7 +335,7 @@ const QuizHistory = () => {
                       </button>
                       <button
                         onClick={() => {
-                          fetch('http://localhost:3001/api/debug/attempts')
+                          fetch('/api/debug/attempts')
                             .then(res => res.json())
                             .then(data => {
                               console.log('Debug attempts result:', data);
@@ -355,7 +355,7 @@ const QuizHistory = () => {
                            const storedUser = localStorage.getItem('user');
                            if (storedUser) {
                              const user = JSON.parse(storedUser);
-                             fetch(`http://localhost:3001/api/test/user-attempts/${user._id}`)
+                             fetch(`/api/test/user-attempts/${user._id}`)
                                .then(res => res.json())
                                .then(data => {
                                  console.log('Test user attempts result:', data);
@@ -382,7 +382,7 @@ const QuizHistory = () => {
                            }
                            
                            try {
-                             const response = await fetch('http://localhost:3001/api/user-attempts/history?limit=1000', {
+                             const response = await fetch('/api/user-attempts/history?limit=1000', {
                                headers: { Authorization: `Bearer ${token}` }
                              });
                              

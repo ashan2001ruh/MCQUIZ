@@ -48,7 +48,7 @@ const FeedbackSection = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/feedback/submit', {
+      const response = await fetch('/api/feedback/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

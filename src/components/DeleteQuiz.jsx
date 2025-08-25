@@ -15,7 +15,7 @@ const DeleteQuiz = ({ isOpen, onClose, quizId, quizTitle, onQuizDeleted }) => {
       
       const token = localStorage.getItem('authToken');
       
-      await axios.delete(`http://localhost:3001/api/admin/quizzes/${quizId}`, {
+      await axios.delete(`/api/admin/quizzes/${quizId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

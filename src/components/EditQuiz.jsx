@@ -48,7 +48,7 @@ export default function EditQuiz({ isOpen, onClose, onQuizUpdated, quiz }) {
   const fetchSubjects = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await Axios.get('http://localhost:3001/api/admin/subjects', {
+      const response = await Axios.get('/api/admin/subjects', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -186,7 +186,7 @@ export default function EditQuiz({ isOpen, onClose, onQuizUpdated, quiz }) {
     
     try {
       const token = localStorage.getItem('authToken');
-      await Axios.put(`http://localhost:3001/api/admin/quizzes/${quiz.quiz._id}`, formData, {
+      await Axios.put(`/api/admin/quizzes/${quiz.quiz._id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
