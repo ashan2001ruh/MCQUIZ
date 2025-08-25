@@ -57,7 +57,7 @@ export default function Signup() {
     if (!validateForm()) return;
 
     try {
-      const response = await Axios.post('http://localhost:3001/api/register', {
+      const response = await Axios.post('/api/register', {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
