@@ -10,10 +10,36 @@ const Courses = () => {
   const [error, setError] = useState(null);
   const [subjectQuizzes, setSubjectQuizzes] = useState({});
   const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const subscriptionAccess = {
+    'Basic': ['A/L', 'O/L', 'Scholarship'], // Can see all subjects
+    'A/L Pro': ['A/L'],
+    'O/L Pro': ['O/L'],
+    'School Pro': ['Scholarship']
+  };
+  
+  const canAccessSubject = (subjectLevel) => {
+    const userSub = user.subscriptionLevel || 'Basic';
+    const allowedLevels = subscriptionAccess[userSub] || [];
+  
+    if (user?.role === 'admin') return true;
+  
+    return allowedLevels.includes(subjectLevel);
+  };
   
   const getAuthHeader = () => {
     const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  const handleLevelChange = (level) => {
+    setSelectedLevel(level);
+  };
+
+  const resetFilter = () => {
+    setSelectedLevel('');
   };
   
   useEffect(() => {
@@ -39,7 +65,12 @@ const Courses = () => {
           setSubjects(subjectsData);
           if (Array.isArray(subjectsData)) {
             const uniqueLevels = [...new Set(subjectsData.map(subject => subject.level).filter(Boolean))];
-            setLevels(uniqueLevels);
+            // Sort levels in the desired order: A/L, O/L, Scholarship
+            const sortedLevels = uniqueLevels.sort((a, b) => {
+              const order = { 'A/L': 1, 'O/L': 2, 'Scholarship': 3 };
+              return (order[a] || 999) - (order[b] || 999);
+            });
+            setLevels(sortedLevels);
           }
         }
         setLoading(false);
@@ -54,6 +85,12 @@ const Courses = () => {
   useEffect(() => {
     const fetchQuizzes = async () => {
       if (!subjects.length) return;
+
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userLevel = user.subscriptionLevel || 'Basic';
+
+      console.log("userLevel : ",userLevel);
+
       const quizzesBySubject = {};
       for (const subject of subjects) {
         if (!subject || !subject._id) continue;
@@ -63,24 +100,25 @@ const Courses = () => {
             headers: getAuthHeader()
           });
           if (response.data && response.data.quizzes) {
-            quizzesBySubject[subject._id] = response.data.quizzes;
+            // FILTER QIUZES TO MATCH USER SUBSCRIPTION LEVEL
+            //quizzesBySubject[subject._id] = response.data.quizzes.filter(quiz => quiz.subscriptionLevel === userLevel);
+
+            quizzesBySubject[subject._id] = response.data.quizzes.filter(quiz => {
+              if (user?.role === 'admin') return true;
+              return quiz.subscriptionLevel === userLevel;
+            });
+
+            console.log("Quizzes for subject", subject.name, ":", quizzesBySubject[subject._id]);
           }
         } catch (err) {
           // Ignore errors for individual subjects
         }
       }
       setSubjectQuizzes(quizzesBySubject);
+      console.log(quizzesBySubject);
     };
     fetchQuizzes();
   }, [subjects]);
-
-  const handleLevelChange = (level) => {
-    setSelectedLevel(level);
-  };
-  
-  const resetFilter = () => {
-    setSelectedLevel('');
-  };
   
   const subjectsByLevel = Array.isArray(subjects) 
     ? subjects.reduce((acc, subject) => {
@@ -136,6 +174,7 @@ const Courses = () => {
         <span className="text-[#014482]">All </span>
         <span className="text-[#018ABE]">Courses</span>
       </h1>
+      
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Filter by Level:</h2>
         <div className="flex flex-wrap gap-3 justify-center">
@@ -152,20 +191,23 @@ const Courses = () => {
           {levels.map((level) => (
             <button
               key={level}
-              onClick={() => handleLevelChange(level)}
+              onClick={() => handleLevelChange(level === 'School' ? 'Scholarship' : level)}
               className={`px-4 py-2 rounded-3xl border border-[#014482] text-[#014482] ${
                 selectedLevel === level 
                   ? 'bg-[#014482] text-white' 
                   : 'bg-transparent hover:bg-gray-100'
               }`}
             >
-              {level === "Grade 5" ? "Grade 5 Scholarship" : 
-               level === "OL" ? "GCE O/L" : 
-               level === "AL" ? "GCE A/L" : level}
+              {level === "School" ? "Scholarship" :
+               level === "Scholarship" ? "Scholarship" : 
+               level === "O/L" ? "O/L" : 
+               level === "A/L" ? "A/L" : level}
             </button>
           ))}
         </div>
       </div>
+
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -178,37 +220,32 @@ const Courses = () => {
         <div className="text-center py-12">
           <h3 className="text-xl text-gray-600">No subjects available</h3>
         </div>
-      ) : selectedLevel ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {subjects.map((subject) => (
-            subject && subject.isActive && (
-              <SubjectCard 
-                key={subject._id} 
-                subject={subject} 
-                quizzes={subjectQuizzes[subject._id] || []}
-                onQuizAttempt={handleQuizAttempt}
-              />
-            )
-          ))}
-        </div>
       ) : (
-        Object.keys(subjectsByLevel).map((level) => (
-          <div key={level} className="mb-12">
-            <h2 className="text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200">
-              {level} <span className="text-gray-500 text-lg">({subjectsByLevel[level].length} subjects)</span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {subjectsByLevel[level].map((subject) => (
-                <SubjectCard 
-                  key={subject._id} 
-                  subject={subject}
-                  quizzes={subjectQuizzes[subject._id] || []}
-                  onQuizAttempt={handleQuizAttempt}
-                />
-              ))}
+        Object.keys(subjectsByLevel).map((level) => {
+          const accessibleSubjects = subjectsByLevel[level].filter(subject =>
+            subject?.isActive && canAccessSubject(subject.level)
+          );
+        
+          if (accessibleSubjects.length === 0) return null; // ✅ Skip this level
+        
+          return (
+            <div key={level} className="mb-12">
+              <h2 className="text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200">
+                {level} <span className="text-gray-500 text-lg">({accessibleSubjects.length} subjects)</span>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {accessibleSubjects.map((subject) => (
+                  <SubjectCard 
+                    key={subject._id} 
+                    subject={subject}
+                    quizzes={subjectQuizzes[subject._id] || []}
+                    onQuizAttempt={handleQuizAttempt}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );

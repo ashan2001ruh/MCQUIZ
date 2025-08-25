@@ -16,15 +16,12 @@ const Pricing = () => {
   const isLoggedIn = () => {
     const token = localStorage.getItem('authToken');
     if (!token) return false;
-    // Decode JWT payload using base64url; if parsing fails, assume logged in and let server validate
+    
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
-      const payload = JSON.parse(atob(padded));
+      const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.exp > Date.now() / 1000;
     } catch (error) {
-      return true;
+      return false;
     }
   };
 
@@ -73,7 +70,6 @@ const Pricing = () => {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'https://sandbox.payhere.lk/pay/checkout'; // Sandbox URL
-        form.target = '_self';
         
         // Add all payment data as hidden fields
         Object.keys(paymentData).forEach(key => {
@@ -87,16 +83,11 @@ const Pricing = () => {
         // Submit the form
         document.body.appendChild(form);
         form.submit();
-        // Do not remove form immediately to avoid interrupting navigation
+        document.body.removeChild(form);
       }
     } catch (err) {
       console.error('Payment initialization error:', err);
-      if (err?.response?.status === 401) {
-        alert('Please login to access this plan');
-        navigate('/login');
-      } else {
-        setError(err?.response?.data?.message || 'Failed to initialize payment. Please try again.');
-      }
+      setError('Failed to initialize payment. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -107,7 +98,7 @@ const Pricing = () => {
       title: 'Basic',
       price: 'FREE',
       features: [
-        'Access 10 questions from any exam to get a taste of the MCQ practice.',
+        'Access basic questions from some exam to get a taste of the MCQ practice.',
         'Attempt one full-length test to assess your knowledge.',
       ],
       buttonText: 'TRY NOW',
@@ -167,7 +158,7 @@ const Pricing = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="pricing-section">
           {plans.map((plan, index) => (
             <motion.div
               key={index}

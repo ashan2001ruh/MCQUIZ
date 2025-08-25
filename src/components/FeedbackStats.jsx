@@ -28,7 +28,7 @@ const FeedbackStats = () => {
 
   if (loading) {
     return (
-      <div className="bg-white py-16">
+      <div className="bg-[#DDE8F0] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="w-8 h-8 border-4 border-[#018ABD] border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -44,7 +44,7 @@ const FeedbackStats = () => {
     : 0;
 
   return (
-    <div className="bg-white py-16">
+    <div className="bg-[#DDE8F0] py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#004581] mb-4">

@@ -1,6 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import OnlineTestImage from '../Assets/Online test-amico.png';
 import FeedbackSection from './FeedbackSection';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -11,14 +38,15 @@ const UserDashboard = () => {
     averageScore: 0,
     improvement: 0,
     passRate: 0,
-    highestScore: 0
+    highestScore: 0,
+    weeklyActivity: [],
+    monthlyActivity: [],
+    subjectPerformance: []
   });
   const [recentQuizzes, setRecentQuizzes] = useState([]);
-  const [enrolledSubjects, setEnrolledSubjects] = useState([]);
-  const [lastUpdated, setLastUpdated] = useState(null);
   const navigate = useNavigate();
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('authToken');
@@ -27,117 +55,73 @@ const UserDashboard = () => {
           return;
         }
         
-        console.log('User token found, fetching dashboard data...');
-
         // Get user from localStorage first
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
           setUser(JSON.parse(storedUser));
         }
 
-        // Fetch real data from backend APIs
+        // Fetch updated user profile data to get latest profile picture
         try {
-          // Fetch user profile
-          const userResponse = await fetch('http://localhost:3001/api/profile', {
+          const userResponse = await fetch('http://localhost:3001/api/user/profile', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (userResponse.ok) {
             const userData = await userResponse.json();
-            if (userData.user) {
-              setUser(userData.user);
-              localStorage.setItem('user', JSON.stringify(userData.user));
-            }
+            console.log('👤 User Profile Data:', userData);
+            setUser(userData.user);
+            // Update localStorage with latest user data
+            localStorage.setItem('user', JSON.stringify(userData.user));
           }
-        } catch (apiError) {
-          console.log('Could not fetch user profile from API, using stored data');
+        } catch (userError) {
+          console.log('Could not fetch user profile from API:', userError);
         }
 
+        // Fetch user stats
         try {
-          // Fetch user stats
-          console.log('Fetching user stats...');
           const statsResponse = await fetch('http://localhost:3001/api/user/stats', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (statsResponse.ok) {
             const statsData = await statsResponse.json();
-            console.log('Real user stats:', statsData);
+            console.log('📊 User Stats Data:', statsData);
             setStats({
               quizzesTaken: statsData.quizzesTaken || 0,
               averageScore: statsData.averageScore || 0,
               improvement: statsData.improvement || 0,
               passRate: statsData.passRate || 0,
-              highestScore: statsData.highestScore || 0
-            });
-          } else {
-            console.log('Stats API response not ok:', statsResponse.status);
-            // Set default stats if API fails
-            setStats({
-              quizzesTaken: 0,
-              averageScore: 0,
-              improvement: 0,
-              passRate: 0,
-              highestScore: 0
+              highestScore: statsData.highestScore || 0,
+              weeklyActivity: statsData.weeklyActivity || [],
+              monthlyActivity: statsData.monthlyActivity || [],
+              subjectPerformance: statsData.subjectPerformance || []
             });
           }
         } catch (apiError) {
           console.log('Could not fetch user stats from API:', apiError);
-          // Set default stats if API fails
-          setStats({
-            quizzesTaken: 0,
-            averageScore: 0,
-            improvement: 0,
-            passRate: 0,
-            highestScore: 0
-          });
         }
 
+        // Fetch recent quiz attempts
         try {
-          // Fetch recent quiz attempts
-          console.log('Fetching recent quizzes...');
           const quizzesResponse = await fetch('http://localhost:3001/api/user/recent-quizzes', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (quizzesResponse.ok) {
             const quizzesData = await quizzesResponse.json();
-            console.log('Real recent quizzes:', quizzesData);
-            // Transform the data to match the expected format
             const transformedQuizzes = (quizzesData.attempts || []).map(attempt => ({
               quiz: {
                 title: attempt.quizTitle || 'Unknown Quiz',
                 subject: { name: attempt.subjectName || 'Unknown Subject' },
-                difficulty: attempt.difficulty || 'Medium'
+                difficulty: attempt.difficulty || 'Medium',
+                subscriptionLevel: attempt.subscriptionLevel || 'Basic'
               },
               score: { percentage: attempt.score || 0 },
               passed: attempt.passed || false,
               submittedAt: attempt.attemptDate || new Date().toISOString()
             }));
             setRecentQuizzes(transformedQuizzes);
-          } else {
-            console.log('Recent quizzes API response not ok:', quizzesResponse.status);
-            setRecentQuizzes([]);
           }
         } catch (apiError) {
           console.log('Could not fetch recent quizzes from API:', apiError);
-          setRecentQuizzes([]);
-        }
-
-        try {
-          // Fetch user's enrolled courses
-          console.log('Fetching enrolled courses...');
-          const enrolledResponse = await fetch('http://localhost:3001/api/enrolled-courses', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (enrolledResponse.ok) {
-            const enrolledData = await enrolledResponse.json();
-            console.log('Enrolled courses:', enrolledData);
-            setEnrolledSubjects(enrolledData.subjects || []);
-          } else {
-            console.log('Enrolled courses API response not ok:', enrolledResponse.status);
-            setEnrolledSubjects([]);
-          }
-        } catch (apiError) {
-          console.log('Could not fetch enrolled courses from API:', apiError);
-          setEnrolledSubjects([]);
         }
 
       } catch (err) {
@@ -150,7 +134,6 @@ const UserDashboard = () => {
         }
       } finally {
         setLoading(false);
-        setLastUpdated(new Date());
       }
     };
 
@@ -163,97 +146,10 @@ const UserDashboard = () => {
     navigate('/login');
   };
 
-  const handleRefresh = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
-      // Fetch fresh data
-      try {
-        // Fetch user stats
-        const statsResponse = await fetch('http://localhost:3001/api/user/stats', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json();
-          console.log('Refreshed user stats:', statsData);
-          setStats({
-            quizzesTaken: statsData.quizzesTaken || 0,
-            averageScore: statsData.averageScore || 0,
-            improvement: statsData.improvement || 0,
-            passRate: statsData.passRate || 0,
-            highestScore: statsData.highestScore || 0
-          });
-        }
-      } catch (apiError) {
-        console.log('Could not refresh user stats:', apiError);
-      }
-
-      try {
-        // Fetch recent quiz attempts
-        const quizzesResponse = await fetch('http://localhost:3001/api/user/recent-quizzes', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (quizzesResponse.ok) {
-          const quizzesData = await quizzesResponse.json();
-          console.log('Refreshed recent quizzes:', quizzesData);
-          // Transform the data to match the expected format
-          const transformedQuizzes = (quizzesData.attempts || []).map(attempt => ({
-            quiz: {
-              title: attempt.quizTitle || 'Unknown Quiz',
-              subject: { name: attempt.subjectName || 'Unknown Subject' },
-              difficulty: attempt.difficulty || 'Medium'
-            },
-            score: { percentage: attempt.score || 0 },
-            passed: attempt.passed || false,
-            submittedAt: attempt.attemptDate || new Date().toISOString()
-          }));
-          setRecentQuizzes(transformedQuizzes);
-        }
-      } catch (apiError) {
-        console.log('Could not refresh recent quizzes:', apiError);
-      }
-
-      try {
-        // Fetch enrolled courses
-        const enrolledResponse = await fetch('http://localhost:3001/api/enrolled-courses', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (enrolledResponse.ok) {
-          const enrolledData = await enrolledResponse.json();
-          console.log('Refreshed enrolled courses:', enrolledData);
-          setEnrolledSubjects(enrolledData.subjects || []);
-        }
-      } catch (apiError) {
-        console.log('Could not refresh enrolled courses:', apiError);
-      }
-    } catch (err) {
-      console.error('Error refreshing data:', err);
-      setError('Failed to refresh dashboard data. Please try again.');
-    } finally {
-      setLoading(false);
-      setLastUpdated(new Date());
-    }
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'hard': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
   };
 
   const getScoreColor = (score) => {
@@ -262,12 +158,158 @@ const UserDashboard = () => {
     return 'text-red-600';
   };
 
+  // Prepare chart data
+  const weeklyChartData = (() => {
+    // Use the array directly from backend (already properly ordered Monday to Sunday)
+    const chartData = stats.weeklyActivity || Array(7).fill(0);
+    
+    console.log('📊 Weekly Chart Data Debug:', {
+      weeklyActivity: stats.weeklyActivity,
+      chartData: chartData,
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    });
+    
+    return {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [
+        {
+          label: 'Quizzes Taken',
+          data: chartData,
+          backgroundColor: 'rgba(1, 138, 189, 0.8)',
+          borderColor: 'rgba(1, 138, 189, 1)',
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
+        }
+      ]
+    };
+  })();
+
+  const monthlyChartData = (() => {
+    // Create months array for the last 6 months
+    const months = [];
+    const currentDate = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      months.push(monthDate.toLocaleDateString('en-US', { month: 'short' }));
+    }
+
+    // Create chart data array
+    const chartData = [];
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const year = monthDate.getFullYear();
+      const month = monthDate.getMonth() + 1;
+      
+      // Find matching month data from backend
+      const monthData = stats.monthlyActivity.find(activity => {
+        if (!activity.month) return false;
+        const [activityYear, activityMonth] = activity.month.split('-');
+        return parseInt(activityYear) === year && parseInt(activityMonth) === month;
+      });
+      
+      chartData.push(monthData ? monthData.averageScore : 0);
+    }
+
+    console.log('📊 Monthly Chart Data Debug:', {
+      monthlyActivity: stats.monthlyActivity,
+      chartData: chartData,
+      labels: months
+    });
+
+    return {
+      labels: months,
+      datasets: [
+        {
+          label: 'Average Score (%)',
+          data: chartData,
+          borderColor: 'rgba(1, 138, 189, 1)',
+          backgroundColor: 'rgba(1, 138, 189, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: 'rgba(1, 138, 189, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+        }
+      ]
+    };
+  })();
+
+  const progressChartData = {
+    labels: ['Completed', 'Remaining'],
+    datasets: [
+      {
+        data: [stats.averageScore || 0, 100 - (stats.averageScore || 0)],
+        backgroundColor: [
+          'rgba(1, 138, 189, 0.8)',
+          'rgba(229, 231, 235, 0.5)'
+        ],
+        borderColor: [
+          'rgba(1, 138, 189, 1)',
+          'rgba(229, 231, 235, 1)'
+        ],
+        borderWidth: 2,
+      }
+    ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: 'rgba(1, 138, 189, 1)',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(0, 0, 0, 0.1)' },
+        ticks: { color: '#6B7280', font: { size: 12 } },
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#6B7280', font: { size: 12 } },
+      },
+    },
+  };
+
+  const lineChartOptions = {
+    ...chartOptions,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        grid: { color: 'rgba(0, 0, 0, 0.1)' },
+        ticks: {
+          color: '#6B7280',
+          font: { size: 12 },
+          callback: function(value) { return value + '%'; }
+        },
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#6B7280', font: { size: 12 } },
+      },
+    },
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#DDE8F0]">
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#018ABD] mx-auto mb-4"></div>
-          <p className="text-[#004581]">Loading your dashboard...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#018ABD] mx-auto mb-6"></div>
+          <p className="text-gray-700 text-lg font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -275,14 +317,14 @@ const UserDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#DDE8F0]">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center border border-[#004581]">
-          <div className="text-red-500 text-5xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold mb-4 text-[#004581]">Error Loading Dashboard</h2>
-          <p className="mb-6 text-[#004581]">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Error Loading Dashboard</h2>
+          <p className="mb-6 text-gray-600">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-[#018ABD] text-white px-6 py-3 rounded-full hover:bg-[#004581] transition-colors"
+            className="bg-[#018ABD] text-white px-8 py-3 rounded-lg hover:bg-[#004581] transition-colors"
           >
             Try Again
           </button>
@@ -292,228 +334,320 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#DDE8F0]">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-[#014482] to-[#0389BC] shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen bg-blue-50 flex">
+      {/* Left Sidebar */}
+      <div className="w-64 bg-white shadow-lg fixed h-full z-10">
+        {/* Logo */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-gradient-to-r from-[#014482] to-[#018ABD] rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200">
+                  <span className="text-3xl text-white font-bold">Q</span>
+                </div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#014482] to-[#018ABD] bg-clip-text text-transparent">
+                    MCQuiz
+                  </h1>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="mt-8 px-4">
+          <div className="space-y-2">
+            <Link
+              to="/courses"
+              className="flex items-center px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-3 text-[#018ABD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Try Quizzes</span>
+            </Link>
+
+            <Link
+              to="/quiz-history"
+              className="flex items-center px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-3 text-[#018ABD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <span>Quiz History</span>
+            </Link>
+
+            <Link
+              to="/user-profile"
+              className="flex items-center px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-3 text-[#018ABD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>Profile</span>
+            </Link>
+
+            <button
+              onClick={() => {
+                const feedbackSection = document.getElementById('feedback-section');
+                if (feedbackSection) {
+                  feedbackSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="flex items-center px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors w-full text-left"
+            >
+              <svg className="w-5 h-5 mr-3 text-[#018ABD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span>Feedback</span>
+            </button>
+          </div>
+        </nav>
+
+        {/* Upgrade Account Card - Only show for Basic users */}
+        {user?.subscriptionLevel === 'Basic' && (
+          <div className="px-4 mt-8">
+            <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl p-4 text-white">
+              <div className="flex items-center mb-3">
+                <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <h3 className="font-semibold text-sm">Upgrade your Account to Pro</h3>
+              </div>
+              <p className="text-xs mb-3 opacity-90">Upgrade to premium to get premium features</p>
+              <Link
+                to="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/');
+                  // Wait for navigation to complete, then scroll to pricing section
+                  setTimeout(() => {
+                    const pricingSection = document.getElementById('pricing-section');
+                    if (pricingSection) {
+                      pricingSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}
+                className="block w-full bg-white text-yellow-600 text-center py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm"
+              >
+                Upgrade
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Main Content */}
+      <div className="ml-64 flex-1">
+        {/* Top Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">MCQuiz Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
             <div className="flex items-center space-x-4">
-              <span className="text-white font-medium">
-                Welcome, {user?.firstName || 'User'}!
+              <span className="text-gray-700 font-medium">
+                Welcome, {user?.firstName || 'User'}! 👋
               </span>
-              <button
-                onClick={handleRefresh}
-                className="text-white hover:text-gray-200 px-4 py-2 rounded flex items-center space-x-1"
-                title="Refresh Dashboard Data"
+              <div className="flex items-center space-x-2">
+                {user?.profilePicture && user.profilePicture.trim() !== '' ? (
+                  <img
+                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `http://localhost:3001/${user.profilePicture}`}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-[#018ABD]"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full border-2 border-[#018ABD] bg-gray-50 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#018ABD]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                  </div>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Dashboard Content */}
+        <div className="p-6">
+          {/* Welcome Banner */}
+          <div className="bg-gradient-to-r from-[#014482] via-[#0389BC] to-[#018ABD] rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold mb-2">Welcome to MCQuiz Learning Platform! 🎯</h2>
+                <p className="text-lg opacity-90">Master your subjects with our comprehensive MCQ practice tests. Track your progress, improve your skills, and achieve academic excellence!</p>
+                <Link
+                  to="/courses"
+                  className="inline-block bg-white text-[#018ABD] px-6 py-3 rounded-lg font-semibold mt-4 hover:bg-gray-100 transition-colors"
+                >
+                  Start Learning
+                </Link>
+              </div>
+              <div className="hidden lg:block">
+                <img src={OnlineTestImage} alt="Online Test" className="w-48 h-48 object-contain" />
+              </div>
+            </div>
+          </div>
+
+          {/* Key Metrics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Quizzes Taken</h3>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-green-600">{stats.quizzesTaken || 0}</p>
+              <p className="text-sm text-gray-600 mt-2">Total quizzes completed</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Average Score</h3>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-blue-600">
+                {Number.isInteger(stats.averageScore || 0) ? (stats.averageScore || 0) : (stats.averageScore || 0).toFixed(1)}%
+              </p>
+              <p className="text-sm text-gray-600 mt-2">Your performance score</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Pass Rate</h3>
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-purple-600">
+                {Number.isInteger(stats.passRate || 0) ? (stats.passRate || 0) : (stats.passRate || 0).toFixed(1)}%
+              </p>
+              <p className="text-sm text-gray-600 mt-2">Success rate</p>
+            </div>
+          </div>
+
+          {/* Charts and Analytics Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Learning Activity Chart */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-800 mb-6">Learning Activity (This Week)</h3>
+              <div className="h-64">
+                <Bar data={weeklyChartData} options={chartOptions} />
+              </div>
+              <p className="text-center text-gray-500 text-sm mt-4">
+                {stats.weeklyActivity && stats.weeklyActivity.length > 0 
+                  ? 'Based on your quiz activity this week' 
+                  : 'No quiz activity this week yet'}
+              </p>
+            </div>
+
+            {/* Progress Donut Chart */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-800 mb-6">Overall Progress</h3>
+              <div className="flex items-center justify-center mb-6">
+                <div className="relative w-32 h-32">
+                  <Doughnut 
+                    data={progressChartData} 
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                      },
+                      cutout: '70%',
+                    }} 
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-gray-800">{stats.averageScore || 0}%</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-center text-gray-600 mb-4">Your average quiz performance</p>
+              <div className="text-center text-sm text-gray-500 mb-4">
+                <p>Quizzes: {stats.quizzesTaken || 0}</p>
+                <p>Pass Rate: {stats.passRate || 0}%</p>
+                <p>Highest Score: {stats.highestScore || 0}%</p>
+              </div>
+              <button 
+                onClick={() => navigate('/quiz-history')}
+                className="w-full bg-[#014482] text-white py-2 rounded-lg font-medium hover:bg-[#004581] transition-colors"
               >
-                <span>🔄</span>
-                <span className="hidden sm:inline">Refresh</span>
-              </button>
-              <button
-                onClick={handleLogout}
-                className="text-white hover:text-gray-200 px-4 py-2 rounded"
-              >
-                Logout
+                View Detailed Stats
               </button>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Banner */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-[#018ABD]">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-[#004581] mb-2">
-                Welcome to your Learning Dashboard! 👋
-              </h2>
-              <p className="text-[#004581] opacity-80">
-                Track your progress, view your enrolled courses, and continue your learning journey.
-              </p>
+          {/* Score Activity Chart */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">Score Performance (Last 6 Months)</h3>
+            <div className="h-64">
+              <Line data={monthlyChartData} options={lineChartOptions} />
             </div>
-            {lastUpdated && (
-              <div className="text-right">
-                <p className="text-xs text-gray-500">
-                  Last updated: {lastUpdated.toLocaleTimeString()}
-                </p>
+            <p className="text-center text-gray-500 text-sm mt-4">
+              {stats.monthlyActivity && stats.monthlyActivity.length > 0 
+                ? 'Based on your monthly performance' 
+                : 'Complete more quizzes to see your monthly performance data'}
+            </p>
+          </div>
+
+          {/* Recent Quiz Attempts */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">Recent Quiz Attempts</h3>
+            {recentQuizzes.length > 0 ? (
+              <div className="space-y-4">
+                {recentQuizzes.slice(0, 5).map((quiz, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-[#018ABD] rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-800">{quiz.quiz?.title || 'Quiz'}</h4>
+                        <p className="text-sm text-gray-600">{quiz.quiz?.subject?.name || 'Subject'}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-lg font-bold ${getScoreColor(quiz.score?.percentage || 0)}`}>
+                        {quiz.score?.percentage || 0}%
+                      </p>
+                      <p className="text-sm text-gray-600">{formatDate(quiz.submittedAt)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-600">No recent quiz attempts found.</p>
+                <Link
+                  to="/courses"
+                  className="inline-block bg-[#018ABD] text-white px-6 py-2 rounded-lg mt-4 hover:bg-[#004581] transition-colors"
+                >
+                  Take Your First Quiz
+                </Link>
               </div>
             )}
           </div>
-          <Link
-            to="/courses"
-            className="bg-[#018ABD] text-white px-6 py-3 rounded-full font-medium hover:bg-[#004581] transition-colors inline-block"
-          >
-            Browse Courses
-          </Link>
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Quizzes Taken</h3>
-            <p className="text-3xl font-bold text-[#018ABD]">{stats.quizzesTaken || 0}</p>
+          {/* Feedback Section */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 mb-8" id="feedback-section">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">Share Your Feedback</h3>
+            <FeedbackSection />
           </div>
+
           
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Average Score</h3>
-            <p className={`text-3xl font-bold ${getScoreColor(stats.averageScore || 0)}`}>
-              {stats.averageScore || 0}%
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Improvement</h3>
-            <p className={`text-3xl font-bold ${(stats.improvement || 0) > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {(stats.improvement || 0) > 0 ? '+' : ''}{stats.improvement || 0}%
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD]">
-            <h3 className="text-lg font-semibold text-[#004581] mb-2">Pass Rate</h3>
-            <p className="text-3xl font-bold text-[#018ABD]">{stats.passRate || 0}%</p>
-          </div>
         </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD] mb-8">
-          <h3 className="text-xl font-bold text-[#004581] mb-6">Recent Quiz Attempts</h3>
-          {recentQuizzes.length > 0 ? (
-            <div className="space-y-4">
-              {recentQuizzes.map((quiz, index) => (
-                <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
-                  <div className="flex justify-between items-center">
-                                       <div>
-                     <h4 className="font-medium text-[#004581]">{quiz.quiz?.title || 'Quiz'}</h4>
-                     <p className="text-sm text-gray-600">
-                       {quiz.quiz?.subject?.name || 'Subject'} • {formatDate(quiz.submittedAt)}
-                     </p>
-                   </div>
-                   <div className="text-right">
-                     <span className={`px-2 py-1 rounded-full text-sm ${quiz.passed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                       {quiz.passed ? 'Passed' : 'Failed'}
-                     </span>
-                     <p className={`text-lg font-bold ${getScoreColor(quiz.score?.percentage || 0)}`}>
-                       {quiz.score?.percentage || 0}%
-                     </p>
-                   </div>
-                  </div>
-                                     {quiz.quiz?.difficulty && (
-                     <div className="mt-2">
-                       <span className={`text-xs px-2 py-1 rounded ${getDifficultyColor(quiz.quiz.difficulty)}`}>
-                         {quiz.quiz.difficulty}
-                       </span>
-                     </div>
-                   )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-[#004581] opacity-80 mb-4">No recent quiz attempts found.</p>
-              <Link
-                to="/courses"
-                className="inline-block bg-[#018ABD] text-white px-4 py-2 rounded-full text-sm hover:bg-[#004581] transition-colors"
-              >
-                Take Your First Quiz
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Enrolled Courses */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#018ABD] mb-8">
-          <h3 className="text-xl font-bold text-[#004581] mb-6">My Enrolled Courses</h3>
-          {enrolledSubjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {enrolledSubjects.map((course, index) => (
-                <div key={course._id || index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-[#004581]">{course.name}</h4>
-                    <span className={`text-xs px-2 py-1 rounded ${course.isEnrolled ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                      {course.isEnrolled ? 'Active' : 'Available'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">{course.description || 'No description available'}</p>
-                  <p className="text-xs text-gray-500 mb-4">Level: {course.level}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      {course.isEnrolled ? 'Continue learning' : 'Start learning'}
-                    </span>
-                    <Link
-                      to={`/subject/${course._id}/quizzes`}
-                      className="bg-[#018ABD] text-white px-4 py-2 rounded text-sm hover:bg-[#004581] transition-colors"
-                    >
-                      {course.isEnrolled ? 'Continue' : 'Start'}
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-[#004581] opacity-80 mb-4">No enrolled courses found.</p>
-              <Link
-                to="/courses"
-                className="inline-block bg-[#018ABD] text-white px-6 py-3 rounded-full font-medium hover:bg-[#004581] transition-colors"
-              >
-                Browse Courses
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link
-            to="/courses"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Browse Courses</h4>
-            <p className="text-sm text-gray-600 mt-1">Explore new subjects</p>
-          </Link>
-
-          <Link
-            to="/quiz-history"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Quiz History</h4>
-            <p className="text-sm text-gray-600 mt-1">View past attempts</p>
-          </Link>
-
-          <Link
-            to="/subscription"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Premium</h4>
-            <p className="text-sm text-gray-600 mt-1">Upgrade your plan</p>
-          </Link>
-
-          <Link
-            to="/profile"
-            className="bg-white rounded-lg shadow-sm p-4 border border-[#018ABD] hover:bg-gray-50 transition-colors text-center"
-          >
-            <h4 className="font-medium text-[#004581]">Profile</h4>
-            <p className="text-sm text-gray-600 mt-1">Manage settings</p>
-          </Link>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-[#014482] text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-xl font-bold mb-2">MCQuiz</h2>
-          <p className="text-sm opacity-80 mb-4">Your MCQ learning companion</p>
-          <p className="text-sm opacity-80">
-            &copy; {new Date().getFullYear()} MCQuiz. All rights reserved.
-          </p>
-        </div>
-      </footer>
-
-      {/* Feedback Section */}
-      <FeedbackSection />
+      </div>
     </div>
   );
 };
