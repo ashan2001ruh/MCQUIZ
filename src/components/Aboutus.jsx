@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import aboutUsImage from '../Assets/aboutus.png'; // Replace with your image path
 import { FaPhone, FaEnvelope, FaGlobe } from 'react-icons/fa'; // Import icons from react-icons
 
@@ -79,35 +80,32 @@ const AboutUs = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-xl font-bold text-[#004581] mb-4">Quick Links</h3>
-              <ul className="text-lg text-[#004581]">
-                <li className="mb-2"><button onClick={() => scrollToSection(homeRef)} className="hover:text-[#018ABD]">Home</button></li>
-                <li className="mb-2"><button onClick={() => scrollToSection(featuresRef)} className="hover:text-[#018ABD]">Features</button></li>
-                <li className="mb-2"><button onClick={() => scrollToSection(pricingRef)} className="hover:text-[#018ABD]">Pricing</button></li>
-                <li className="mb-2"><button onClick={() => scrollToSection(aboutUsRef)} className="hover:text-[#018ABD]">About us</button></li>
-                <li className="mb-2"><a href="/faq">FAQ</a></li>
-                <li className="mb-2"><a href="/privacy-policy">Privacy Policy</a></li>
-                <li className="mb-2"><a href="/terms-of-use">Terms of Use</a></li>
-              </ul>
-            </div>
+                         {/* Quick Links */}
+             <div>
+               <h3 className="text-xl font-bold text-[#004581] mb-4">Quick Links</h3>
+               <ul className="text-lg text-[#004581]">
+                 <li className="mb-2"><button onClick={() => scrollToSection(homeRef)} className="hover:text-[#018ABD]">Home</button></li>
+                 <li className="mb-2"><button onClick={() => scrollToSection(featuresRef)} className="hover:text-[#018ABD]">Features</button></li>
+                 <li className="mb-2"><button onClick={() => scrollToSection(pricingRef)} className="hover:text-[#018ABD]">Pricing</button></li>
+                 <li className="mb-2"><button onClick={() => scrollToSection(aboutUsRef)} className="hover:text-[#018ABD]">About us</button></li>
+                 <li className="mb-2"><Link to="/faq" className="hover:text-[#018ABD]">FAQ</Link></li>
+               </ul>
+             </div>
 
-            {/* Members */}
-            <div>
-              <h3 className="text-xl font-bold text-[#004581] mb-4">Members</h3>
-              <ul className="text-lg text-[#004581]">
-                <li className="mb-2"><a href="/my-account">My Account</a></li>
-                <li className="mb-2"><a href="/subscription">Subscription</a></li>
-              </ul>
-            </div>
+                         {/* Members */}
+             <div>
+               <h3 className="text-xl font-bold text-[#004581] mb-4">Members</h3>
+               <ul className="text-lg text-[#004581]">
+                 <li className="mb-2"><Link to="/user-profile" className="hover:text-[#018ABD]">My Account</Link></li>
+               </ul>
+             </div>
 
             {/* Information */}
             <div>
               <h3 className="text-xl font-bold text-[#004581] mb-4">Information</h3>
               <ul className="text-lg text-[#004581]">
-                <li className="mb-2"><a href="/privacy-policy">Privacy Policy</a></li>
-                <li className="mb-2"><a href="/terms-of-use">Terms of Use</a></li>
+                <li className="mb-2"><Link to="/privacy-policy" className="hover:text-[#018ABD]">Privacy Policy</Link></li>
+                <li className="mb-2"><Link to="/terms-of-use" className="hover:text-[#018ABD]">Terms of Use</Link></li>
               </ul>
             </div>
           </div>
