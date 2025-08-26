@@ -49,9 +49,9 @@ const Courses = () => {
         let url;
         if (selectedLevel) {
           const encodedLevel = encodeURIComponent(selectedLevel);
-          url = `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/subjects/level/${encodedLevel}`;
+          url = `${process.env.REACT_APP_API_URL}/api/subjects/level/${encodedLevel}`;
         } else {
-          url = `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/subjects`;
+          url = `${process.env.REACT_APP_API_URL}/api/subjects`;
         }
         const response = await axios.get(url, {
           headers: getAuthHeader()
@@ -95,7 +95,7 @@ const Courses = () => {
       for (const subject of subjects) {
         if (!subject || !subject._id) continue;
         try {
-          const url = `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/user-quizzes/subject/${subject._id}`;
+          const url = `${process.env.REACT_APP_API_URL}/api/user-quizzes/subject/${subject._id}`;
           const response = await axios.get(url, {
             headers: getAuthHeader()
           });
