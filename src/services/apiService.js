@@ -23,7 +23,7 @@ const createHeaders = (includeAuth = true) => {
 
 // Generic API request function
 const apiRequest = async (endpoint, options = {}) => {
-  const url = `/api=${endpoint}`;
+  const url = `${API_BASE_URL}${endpoint}`;
   
   try {
     const requestOptions = {
