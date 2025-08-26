@@ -35,7 +35,7 @@ const UserProfile = () => {
       console.log('Profile picture state updated:', {
         userProfilePicture: user.profilePicture,
         previewUrl: previewUrl,
-        constructedUrl: user.profilePicture.startsWith('http') ? user.profilePicture : `http://localhost:3001/uploads/profile-pictures/${user.profilePicture}`
+        constructedUrl: user.profilePicture.startsWith('http') ? user.profilePicture : `/api/uploads/profile-pictures/${user.profilePicture}`
       });
     }
   }, [user?.profilePicture, previewUrl]);
@@ -82,17 +82,10 @@ const UserProfile = () => {
 
   // Helper function to construct full profile picture URL
   const getProfilePictureUrl = (profilePicture) => {
-    if (!profilePicture || profilePicture.trim() === '') {
-      return null;
-    }
-    
-    if (profilePicture.startsWith('http')) {
-      return profilePicture;
-    } else if (profilePicture.startsWith('/uploads')) {
-      return `http://localhost:3001${profilePicture}`;
-    } else {
-      return `http://localhost:3001/uploads/profile-pictures/${profilePicture}`;
-    }
+    if (!profilePicture || profilePicture.trim() === '') return null;
+    if (profilePicture.startsWith('http')) return profilePicture;
+    if (profilePicture.startsWith('/')) return profilePicture; // already absolute (e.g., /api/uploads/...)
+    return `/api/uploads/profile-pictures/${profilePicture}`;
   };
 
   const handleFileChange = async (e) => {
