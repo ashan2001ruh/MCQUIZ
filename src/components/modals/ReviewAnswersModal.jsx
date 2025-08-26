@@ -22,7 +22,7 @@ const ReviewAnswersModal = ({ isOpen, onClose, attemptId }) => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/api/user-attempts/attempt/${attemptId}`, {
+      const response = await fetch(`/api/user-attempts/attempt/${attemptId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

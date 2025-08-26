@@ -48,7 +48,7 @@ const UserProfile = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3001/api/user/profile', {
+      const response = await axios.get('/api/user/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -118,7 +118,7 @@ const UserProfile = () => {
       const formData = new FormData();
       formData.append('profilePicture', file);
 
-      const response = await axios.post('http://localhost:3001/api/user/upload-profile-picture', formData, {
+      const response = await axios.post('/api/user/upload-profile-picture', formData, {
         headers: {
           ...getAuthHeader(),
           'Content-Type': 'multipart/form-data'
@@ -173,7 +173,7 @@ const UserProfile = () => {
 
   const handleUpdateProfile = async () => {
     try {
-      const response = await axios.put('http://localhost:3001/api/user/update-profile', formData, {
+      const response = await axios.put('/api/user/update-profile', formData, {
         headers: getAuthHeader()
       });
 
@@ -193,7 +193,7 @@ const UserProfile = () => {
     try {
       console.log('Requesting OTP for email:', user.email);
       
-      const response = await axios.post('http://localhost:3001/api/password-reset/request-reset', {
+      const response = await axios.post('/api/password-reset/request-reset', {
         email: user.email
       });
 
@@ -219,7 +219,7 @@ const UserProfile = () => {
     try {
       console.log('Verifying OTP for email:', user.email);
       
-      const response = await axios.post('http://localhost:3001/api/password-reset/verify-otp', {
+      const response = await axios.post('/api/password-reset/verify-otp', {
         email: user.email,
         otp: otp.trim()
       });
@@ -240,7 +240,7 @@ const UserProfile = () => {
     try {
       console.log('Resending OTP for email:', user.email);
       
-      const response = await axios.post('http://localhost:3001/api/password-reset/request-reset', {
+      const response = await axios.post('/api/password-reset/request-reset', {
         email: user.email
       });
 
@@ -272,7 +272,7 @@ const UserProfile = () => {
     try {
       console.log('Resetting password for email:', user.email);
       
-      const response = await axios.post('http://localhost:3001/api/password-reset/reset-password', {
+      const response = await axios.post('/api/password-reset/reset-password', {
         email: user.email,
         newPassword: newPassword
       });
@@ -295,7 +295,7 @@ const UserProfile = () => {
 
   const deleteProfilePicture = async () => {
     try {
-      const response = await axios.delete('http://localhost:3001/api/user/delete-profile-picture', {
+      const response = await axios.delete('/api/user/delete-profile-picture', {
         headers: getAuthHeader()
       });
 
