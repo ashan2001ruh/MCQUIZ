@@ -52,7 +52,7 @@ const Pricing = () => {
       const amount = planAmounts[planTitle];
       
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/api/payment/initialize`,
+        `/api/payment/initialize`,
         {
           planType: planTitle,
           amount: amount
