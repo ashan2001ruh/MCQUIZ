@@ -80,11 +80,11 @@ const UserProfile = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  // Helper function to construct full profile picture URL
   const getProfilePictureUrl = (profilePicture) => {
     if (!profilePicture || profilePicture.trim() === '') return null;
     if (profilePicture.startsWith('http')) return profilePicture;
-    if (profilePicture.startsWith('/')) return profilePicture; // already absolute (e.g., /api/uploads/...)
+    if (profilePicture.startsWith('/')) return profilePicture; // e.g., /api/uploads/profile-pictures/...
+    // Fallback (should rarely run if backend now normalizes)
     return `/api/uploads/profile-pictures/${profilePicture}`;
   };
 
