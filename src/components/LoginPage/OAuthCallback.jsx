@@ -31,7 +31,7 @@ export default function OAuthCallback() {
 
     const fetchProfile = async () => {
       try {
-        const res = await fetch('/api/profile', {
+        const res = await fetch('/api/profile', { credentials: 'include' }, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
