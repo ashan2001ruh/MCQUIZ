@@ -35,7 +35,7 @@ const UserProfile = () => {
       console.log('Profile picture state updated:', {
         userProfilePicture: user.profilePicture,
         previewUrl: previewUrl,
-        constructedUrl: user.profilePicture.startsWith('http') ? user.profilePicture : `/api/uploads/profile-pictures/${user.profilePicture}`
+        constructedUrl: getProfilePictureUrl(user.profilePicture)
       });
     }
   }, [user?.profilePicture, previewUrl]);
