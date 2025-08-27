@@ -445,7 +445,7 @@ const UserDashboard = () => {
               <div className="flex items-center space-x-2">
                 {user?.profilePicture && user.profilePicture.trim() !== '' ? (
                   <img
-                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `/api/${user.profilePicture}`}
+                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `${user.profilePicture}`}
                     alt="Profile"
                     className="w-10 h-10 rounded-full object-cover border-2 border-[#018ABD]"
                   />
