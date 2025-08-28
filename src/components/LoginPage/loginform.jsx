@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,18 @@ export default function Form() {
 
   // Get the redirect path from location state, or default to home
   const from = location.state?.from || '/';
+
+  // Check for OAuth errors in URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    
+    if (error === 'oauth_failed') {
+      setMessage('Google Sign-In failed. Please try again or use email/password login.');
+      // Clean up the URL
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, navigate, location.pathname]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -59,8 +71,20 @@ export default function Form() {
   };
 
   const handleGoogleSignIn = () => {
-    const redirectFrom = from || '/';
-    window.location.href = `http://localhost:3001/auth/google?from=${encodeURIComponent(redirectFrom)}`;
+    try {
+      const redirectFrom = from || '/';
+      console.log('Initiating Google Sign-In with redirect to:', redirectFrom);
+      
+      // Validate redirect path - don't redirect back to login
+      if (redirectFrom === '/login') {
+        window.location.href = `http://localhost:3001/auth/google?from=${encodeURIComponent('/')}`;
+      } else {
+        window.location.href = `http://localhost:3001/auth/google?from=${encodeURIComponent(redirectFrom)}`;
+      }
+    } catch (error) {
+      console.error('Error initiating Google Sign-In:', error);
+      setMessage('Failed to initiate Google Sign-In. Please try again.');
+    }
   };
 
   return (
