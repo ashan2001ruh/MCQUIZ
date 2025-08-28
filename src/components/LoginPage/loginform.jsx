@@ -79,7 +79,7 @@ export default function Form() {
       if (redirectFrom === '/login') {
         window.location.href = `https://mcquiz.online/auth/google?from=${encodeURIComponent('/')}`;
       } else {
-        window.location.href = `https://mcquiz.online/api/auth/google?from=${encodeURIComponent(redirectFrom)}`;
+        window.location.href = `https://mcquiz.online/auth/google?from=${encodeURIComponent(redirectFrom)}`;
       }
     } catch (error) {
       console.error('Error initiating Google Sign-In:', error);
