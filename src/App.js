@@ -12,6 +12,10 @@ import QuizAttempts from './components/QuizAttempts';
 import UserDashboard from './components/UserDashboard'
 import QuizHistory from './components/QuizHistory'
 import FeedbackStats from './components/FeedbackStats';
+import UserProfile from './components/UserProfile';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfUse from './components/TermsOfUse';
+import FAQ from './components/FAQ';
 
 import Form from './components/LoginPage/loginform';
 import Signup from './components/SignupPage/signupform';
@@ -70,6 +74,13 @@ function App() {
         {/* Quiz History */}
         <Route path="/quiz-history" element={<QuizHistory />} />
         
+        {/* User Profile */}
+        <Route path="/user-profile" element={<UserProfile />} />
+        
+        {/* Privacy Policy, Terms of Use, and FAQ */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-use" element={<TermsOfUse />} />
+        <Route path="/faq" element={<FAQ />} />
         
         {/* Courses Route */}
         <Route path="/courses" element={<Courses />} />

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 export default function AddSubjectModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
-    level: 'School',
+    level: 'Scholarship',
     description: ''
   });
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export default function AddSubjectModal({ isOpen, onClose, onSubmit }) {
       } else {
         setFormData({
           name: '',
-          level: 'School',
+          level: 'Scholarship',
           description: ''
         });
       }
@@ -97,7 +97,7 @@ export default function AddSubjectModal({ isOpen, onClose, onSubmit }) {
                 className="w-full px-3 py-2 bg-[#DEE8F1] border border-[#014482] rounded focus:outline-none focus:ring-2 focus:ring-[#0389BC]"
                 required
               >
-                <option value="School">School</option>
+                <option value="School">Scholarship</option>
                 <option value="O/L">O/L</option>
                 <option value="A/L">A/L</option>
               </select>

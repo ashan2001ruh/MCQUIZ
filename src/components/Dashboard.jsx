@@ -469,7 +469,7 @@ export default function Dashboard() {
               onChange={handleLevelFilter}
             >
               <option value="">All Levels</option>
-              <option value="School">School</option>
+              <option value="Scholarship">Scholarship</option>
               <option value="O/L">O/L</option>
               <option value="A/L">A/L</option>
             </select>
