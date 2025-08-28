@@ -63,7 +63,7 @@ export default function OAuthCallback() {
         console.log('Fetching user profile from API...');
         
         // Use the correct API endpoint for user profile
-        const res = await fetch('https://mcquiz.online/api/user/profile', {
+        const res = await fetch('/api/user/profile', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
