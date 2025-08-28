@@ -47,7 +47,7 @@ export default function OAuthCallback() {
         } else {
           // For regular users, redirect to the page they were trying to access
           // or to user dashboard if they were going to home
-          target = from === '/' ? '/user-dashboard' : from;
+          target = from === '/' ? '/' : from;
         }
         
         console.log(`Redirecting user with role ${role} to ${target}`);
