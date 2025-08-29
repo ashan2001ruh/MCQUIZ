@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-const UserGreeting = ({ username, onLogout, hideLogoutOnHome = false }) => {
+const UserGreeting = ({ username, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -17,7 +17,7 @@ const UserGreeting = ({ username, onLogout, hideLogoutOnHome = false }) => {
   }, []);
 
   return (
-    <div className="flex items-center gap-4" ref={menuRef}>
+    <div className="flex items-center gap-4 relative" ref={menuRef}>
       <span className="font-medium text-[#004581] text-lg">Hi, {username}! 👋</span>
 
       <div className="relative">

@@ -16,6 +16,7 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   
   const navigate = useNavigate();
 
@@ -27,6 +28,38 @@ const UserProfile = () => {
 
   useEffect(() => {
     fetchUserProfile();
+    
+    // Check for payment status in URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const orderId = urlParams.get('order_id');
+    
+    if (paymentStatus === 'success') {
+      setSuccess('🎉 Payment successful! Your subscription has been updated. You now have access to premium features.');
+      // Immediately refresh user profile to get updated subscription
+      fetchUserProfile();
+      
+      // If we have order ID, verify payment status with backend
+      if (orderId) {
+        verifyPaymentStatus(orderId);
+      }
+      
+      setTimeout(() => {
+        setSuccess(null);
+      }, 8000);
+      // Remove the parameters from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (paymentStatus === 'cancelled') {
+      setError('❌ Payment was cancelled. Your subscription was not updated. Please try again if you wish to upgrade.');
+      setTimeout(() => setError(null), 8000);
+      // Remove the parameters from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (paymentStatus === 'failed') {
+      setError('❌ Payment failed. Your subscription was not updated. Please check your payment details and try again.');
+      setTimeout(() => setError(null), 8000);
+      // Remove the parameters from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   // Debug effect to log profile picture state changes
@@ -54,6 +87,10 @@ const UserProfile = () => {
 
       const userData = response.data.user;
       setUser(userData);
+      
+      // Update localStorage with fresh user data
+      localStorage.setItem('user', JSON.stringify(userData));
+      
       setFormData({
         firstName: userData.firstName || '',
         lastName: userData.lastName || '',
@@ -323,6 +360,114 @@ const UserProfile = () => {
     navigate('/login');
   };
 
+  const handleChoosePlan = async (planName, amount) => {
+    if (!user) {
+      setError('Please login to select a plan');
+      return;
+    }
+
+    if (user.subscriptionLevel === planName) {
+      setError('You already have this plan');
+      return;
+    }
+
+    setPaymentLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        '/api/payment/initialize',
+        {
+          planType: planName,
+          amount: parseInt(amount)
+        },
+        {
+          headers: getAuthHeader()
+        }
+      );
+
+      if (response.data.success) {
+        // Create PayHere form and submit
+        const paymentData = response.data.paymentData;
+        
+        // Create a form to submit to PayHere
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://sandbox.payhere.lk/pay/checkout'; // Sandbox URL for testing
+        
+        // Add all payment data as hidden fields
+        Object.keys(paymentData).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = paymentData[key];
+          form.appendChild(input);
+        });
+        
+        // Submit the form
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+      }
+    } catch (err) {
+      console.error('Payment initialization error:', err);
+      setError('Failed to initialize payment. Please try again.');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const verifyPaymentStatus = async (orderId) => {
+    try {
+      const response = await axios.get(
+        `/api/payment/status/${orderId}`,
+        {
+          headers: getAuthHeader()
+        }
+      );
+
+      console.log('Payment verification response:', response.data);
+      
+      if (response.data.status === 'success') {
+        setSuccess('✅ Payment verified successfully! Your subscription is now active.');
+      } else if (response.data.status === 'pending') {
+        setSuccess('⏳ Payment is being processed. Your subscription will be activated shortly.');
+      }
+    } catch (err) {
+      console.error('Payment verification error:', err);
+      // Don't show error for verification, as the main success message is already shown
+    }
+  };
+
+  const handleSyncSubscription = async () => {
+    setPaymentLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        '/api/payment/update-subscription',
+        {},
+        {
+          headers: getAuthHeader()
+        }
+      );
+
+      if (response.data.message) {
+        setSuccess('Subscription status synchronized successfully!');
+        // Refresh user profile to get updated data
+        await fetchUserProfile();
+        setTimeout(() => setSuccess(null), 3000);
+      }
+    } catch (err) {
+      console.error('Sync subscription error:', err);
+      setError(err.response?.data?.message || 'Failed to sync subscription status.');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-50">
@@ -525,10 +670,45 @@ const UserProfile = () => {
               {/* Quick Stats */}
               <div className="bg-gradient-to-r from-[#014482] to-[#018ABD] p-4 rounded-lg text-white">
                 <h3 className="font-semibold mb-2">Account Status</h3>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <span>Active</span>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                 </div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm">Current Plan:</span>
+                  <div className="flex items-center">
+                    <span className="text-sm font-semibold">{user?.subscriptionLevel || 'Basic'}</span>
+                    {(user?.subscriptionLevel !== 'Basic' && user?.subscriptionLevel !== 'basic' && user?.subscriptionLevel) && (
+                      <span className="ml-2 text-xs bg-yellow-500 px-2 py-1 rounded-full">PRO</span>
+                    )}
+                  </div>
+                </div>
+                {(user?.subscriptionLevel === 'Basic' || user?.subscriptionLevel === 'basic' || !user?.subscriptionLevel) ? (
+                  <button
+                    onClick={() => {
+                      navigate('/');
+                      setTimeout(() => {
+                        const pricingSection = document.getElementById('pricing-section');
+                        if (pricingSection) {
+                          pricingSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }, 100);
+                    }}
+                    className="w-full bg-yellow-500 text-white py-2 rounded-lg font-medium hover:bg-yellow-600 transition-colors text-sm flex items-center justify-center"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    Upgrade Plan
+                  </button>
+                ) : (
+                  <div className="w-full bg-green-600 text-white py-2 rounded-lg font-medium text-center text-sm flex items-center justify-center">
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Premium Active
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -796,6 +976,92 @@ const UserProfile = () => {
                      )}
                    </div>
                 )}
+              </div>
+
+              {/* Subscription Plans Section */}
+              <div className="mt-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-[#014482]">Subscription Plans</h3>
+                  <button
+                    onClick={handleSyncSubscription}
+                    disabled={paymentLoading}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Sync Status
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    {
+                      name: 'School Pro',
+                      price: 'Rs. 1,500',
+                      period: 'per year',
+                      features: [
+                        'Grade 5 Scholarship preparation',
+                        'Immediate feedback on answers',
+                        'Full timed practice tests',
+                        'Progress tracking'
+                      ],
+                      buttonColor: 'bg-blue-600 hover:bg-blue-700'
+                    },
+                    {
+                      name: 'O/L Pro',
+                      price: 'Rs. 2,000',
+                      period: 'per year',
+                      features: [
+                        'O/L subject-based MCQs',
+                        'Instant feedback system',
+                        'Subject-specific timed tests',
+                        'Detailed analytics'
+                      ],
+                      buttonColor: 'bg-green-600 hover:bg-green-700'
+                    },
+                    {
+                      name: 'A/L Pro',
+                      price: 'Rs. 2,500',
+                      period: 'per year',
+                      features: [
+                        'A/L categorized MCQs',
+                        'Real-time answer feedback',
+                        'Exam simulation mode',
+                        'Performance insights'
+                      ],
+                      buttonColor: 'bg-purple-600 hover:bg-purple-700'
+                    }
+                  ].map((plan, index) => (
+                    <div key={index} className="bg-gray-50 p-5 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                      <div className="text-center mb-4">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-2">{plan.name}</h4>
+                        <div className="text-2xl font-bold text-[#018ABD] mb-1">{plan.price}</div>
+                        <div className="text-sm text-gray-600">{plan.period}</div>
+                      </div>
+                      <ul className="text-sm text-gray-600 mb-4 space-y-2">
+                        {plan.features.map((feature, i) => (
+                          <li key={i} className="flex items-start">
+                            <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        onClick={() => handleChoosePlan(plan.name, plan.price.replace(/[^\d]/g, ''))}
+                        disabled={user?.subscriptionLevel === plan.name || paymentLoading}
+                        className={`w-full py-2 px-4 rounded-lg text-white font-medium transition-colors ${
+                          user?.subscriptionLevel === plan.name || paymentLoading
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : `${plan.buttonColor}`
+                        }`}
+                      >
+                        {paymentLoading ? 'Processing...' : user?.subscriptionLevel === plan.name ? 'Current Plan' : 'Choose Plan'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
