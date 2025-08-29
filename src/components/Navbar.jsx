@@ -39,7 +39,7 @@ const Navbar = ({ homeRef, featuresRef, pricingRef, aboutUsRef }) => {
             <div className="w-12 h-12 bg-gradient-to-r from-[#014482] to-[#018ABD] rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-3xl text-white font-bold">Q</span>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#014482] to-[#018ABD] bg-clip-text text-transparent leading-none">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#014482] to-[red] bg-clip-text text-transparent leading-none">
               MCQuiz
             </h1>
           </div>
