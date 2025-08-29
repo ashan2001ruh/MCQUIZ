@@ -9,6 +9,7 @@ import EditSubjectModal from './modals/EditSubjectModal';
 import DeleteConfirmModal from './modals/DeleteConfirmModal';
 import { FaSearch, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import AdminFeedbackManagement from './AdminFeedbackManagement';
+import AdminSubscriptionManagement from './AdminSubscriptionManagement';
 
 export default function Dashboard() {
   const [adminData, setAdminData] = useState(null);
@@ -914,6 +915,11 @@ export default function Dashboard() {
       subject={currentSubject}
     />
   )}
+
+  {/* Subscription Management Section */}
+  <div className="mt-8">
+    <AdminSubscriptionManagement />
+  </div>
 
   {/* Feedback Management Section */}
   <div className="mt-8">
