@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import OnlineTestImage from '../Assets/Online test-amico.png';
 import FeedbackSection from './FeedbackSection';
+import SubscriptionStatus from './SubscriptionStatus';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -400,7 +401,7 @@ const UserDashboard = () => {
         </nav>
 
         {/* Upgrade Account Card - Only show for Basic users */}
-        {user?.subscriptionLevel === 'Basic' && (
+        {(user?.subscriptionLevel === 'Basic' || user?.subscriptionLevel === 'basic' || !user?.subscriptionLevel) && (
           <div className="px-4 mt-8">
             <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl p-4 text-white">
               <div className="flex items-center mb-3">
@@ -597,6 +598,11 @@ const UserDashboard = () => {
                 ? 'Based on your monthly performance' 
                 : 'Complete more quizzes to see your monthly performance data'}
             </p>
+          </div>
+
+          {/* Subscription Status */}
+          <div className="mb-8">
+            <SubscriptionStatus />
           </div>
 
           {/* Recent Quiz Attempts */}
