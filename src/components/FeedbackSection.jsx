@@ -173,14 +173,16 @@ const FeedbackSection = () => {
                 className={`p-4 rounded-lg border ${getSentimentBg(item.sentiment)}`}
               >
                 <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {getSentimentIcon(item.sentiment)}
                     <span className={`font-medium ${getSentimentColor(item.sentiment)}`}>
                       {item.sentiment.charAt(0).toUpperCase() + item.sentiment.slice(1)}
                     </span>
-                    <span className="text-sm text-gray-500">
-                      ({(item.confidence * 100).toFixed(0)}% confidence)
-                    </span>
+                    {item.confidence && (
+                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                        {(item.confidence * 100).toFixed(0)}% confidence
+                      </span>
+                    )}
                   </div>
                   <span className="text-sm text-gray-500">
                     {new Date(item.createdAt).toLocaleDateString()}
