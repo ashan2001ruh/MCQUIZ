@@ -201,8 +201,8 @@ const AdminSubscriptionManagement = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-[#014482] to-[#018ABD]">
-        <h2 className="text-xl font-semibold text-white">Subscription Management</h2>
+      <div className="px-6 py-4 border-b border-gray-200 bg-white">
+        <h2 className="text-xl font-semibold text-[#014482]">Subscription Management</h2>
       </div>
 
       {error && (
